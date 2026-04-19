@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a0a">
+<title>PUSH Workout</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💪</text></svg>">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: #0a0a0a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; min-height: 100vh; overscroll-behavior: none; }
+body { padding-bottom: env(safe-area-inset-bottom); }
+.app { max-width: 480px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) 0 100px; min-height: 100vh; }
+.top-bar { padding: 8px 20px 0; display: flex; justify-content: space-between; align-items: center; }
+.app-title { font-size: 13px; font-weight: 500; color: #888; letter-spacing: 0.5px; text-transform: uppercase; }
+.settings-btn { background: none; border: none; color: #888; font-size: 18px; cursor: pointer; padding: 8px; }
+.today-label { padding: 16px 20px 4px; font-size: 14px; color: #aaa; }
+.day-tabs { display: flex; gap: 0; overflow-x: auto; padding: 8px 20px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab { flex-shrink: 0; padding: 8px 14px 14px 0; font-size: 28px; font-weight: 700; color: #3a3a3a; cursor: pointer; transition: color 0.2s; white-space: nowrap; background: none; border: none; font-family: inherit; }
+.day-tab.active { color: #fff; }
+.day-meta { padding: 4px 20px 16px; font-size: 13px; color: #888; display: flex; gap: 16px; }
+.day-meta-item { display: flex; align-items: center; gap: 5px; }
+.exercises { padding: 0 16px; display: flex; flex-direction: column; gap: 2px; background: #161616; margin: 0 16px; border-radius: 14px; overflow: hidden; }
+.ex-card { background: #161616; padding: 14px 14px; border-bottom: 0.5px solid #252525; }
+.ex-card:last-child { border-bottom: none; }
+.ex-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ex-icon { width: 40px; height: 40px; border-radius: 8px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; cursor: pointer; }
+.ex-main { flex: 1; min-width: 0; cursor: pointer; }
+.ex-name { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.2; display: flex; align-items: center; gap: 6px; }
+.video-link { display: inline-flex; width: 16px; height: 16px; border-radius: 50%; background: #333; color: #aaa; font-size: 10px; align-items: center; justify-content: center; text-decoration: none; flex-shrink: 0; }
+.ex-desc { font-size: 12px; color: #888; margin-top: 3px; }
+.ex-badge { flex-shrink: 0; display: flex; align-items: center; gap: 3px; background: #1D9E75; color: #E1F5EE; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+.ex-badge.zero { background: #2a2a2a; color: #888; }
+.sets-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.set-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.set-num { font-size: 11px; color: #666; width: 38px; flex-shrink: 0; font-weight: 500; }
+.set-check { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #444; background: transparent; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.set-check:active { transform: scale(0.9); }
+.set-check.done { background: #1D9E75; border-color: #1D9E75; }
+.set-check.done::after { content: ''; width: 7px; height: 11px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translateY(-2px); display: block; }
+.set-fields { display: flex; gap: 6px; flex: 1; }
+.field-wrap { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.field-label { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+.field-val { font-size: 13px; color: #fff; background: #0a0a0a; border: 0.5px solid #333; border-radius: 6px; padding: 6px 6px; width: 100%; text-align: center; font-family: inherit; -moz-appearance: textfield; }
+.field-val::-webkit-outer-spin-button, .field-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.field-val:focus { outline: none; border-color: #1D9E75; }
+.field-val.readonly { pointer-events: none; border-color: transparent; background: transparent; }
+.ex-progress { margin-top: 10px; height: 3px; background: #252525; border-radius: 2px; overflow: hidden; }
+.ex-progress-fill { height: 100%; background: #1D9E75; border-radius: 2px; transition: width 0.3s; }
+.ex-completed-banner { margin-top: 8px; font-size: 12px; color: #1D9E75; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+.actions { padding: 20px 16px 0; display: flex; flex-direction: column; gap: 10px; }
+.btn { width: 100%; padding: 16px; border-radius: 50px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: #fff; color: #000; }
+.btn-success { background: #1D9E75; color: #fff; }
+.btn-danger { background: #2a1a1a; color: #ff6b6b; border: 0.5px solid #4a2a2a; }
+.btn-ghost { background: #1a1a1a; color: #fff; border: 0.5px solid #2a2a2a; }
+.edit-toggle { display: flex; justify-content: center; padding: 14px; }
+.edit-btn { background: #1a1a1a; border: 0.5px solid #2a2a2a; font-size: 13px; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 20px; font-family: inherit; }
+.edit-btn.active { background: #2a2a2a; color: #fff; }
+.session-banner { margin: 0 16px 12px; padding: 10px 14px; background: rgba(29, 158, 117, 0.15); border: 0.5px solid rgba(29, 158, 117, 0.3); border-radius: 10px; font-size: 13px; color: #4FD19F; display: flex; align-items: center; gap: 8px; }
+.session-banner .dot { width: 8px; height: 8px; background: #1D9E75; border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+.modal-backdrop.open { display: flex; }
+.modal { background: #1a1a1a; border-radius: 16px; padding: 24px; max-width: 340px; width: 100%; border: 0.5px solid #333; }
+.modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+.modal p { font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.5; }
+.modal-actions { display: flex; flex-direction: column; gap: 8px; }
+.timer-display { font-size: 13px; color: #aaa; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">PUSH</div>
+    <button class="settings-btn" onclick="openReset()" title="Reset all progress">⟲</button>
+  </div>
+
+  <div class="today-label" id="today-label"></div>
+  <div class="day-tabs" id="day-tabs"></div>
+  <div class="day-meta" id="day-meta"></div>
+
+  <div id="session-status"></div>
+  <div class="exercises" id="exercises"></div>
+
+  <div class="edit-toggle"><button class="edit-btn" id="edit-btn" onclick="toggleEdit()">✎ Edit</button></div>
+  <div class="actions" id="actions"></div>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3 id="modal-title"></h3>
+    <p id="modal-body"></p>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script>
+const WORKOUTS = [
+  {
+    day: 1, label: "Day 1", est: 50,
+    exercises: [
+      { id: "WL", name: "Walking Lunge", sets: 3, reps: 16, weight: 0, unit: "BW", icon: "🚶" },
+      { id: "BBP", name: "Barbell Bench Press", sets: 3, reps: 8, weight: 135, unit: "lbs", icon: "🏋️" },
+      { id: "DRD", name: "Dumbbell Romanian Deadlift", sets: 3, reps: 10, weight: 50, unit: "lbs", icon: "💪" },
+      { id: "SDIC", name: "Seated Dumbbell Incline Curl", sets: 3, reps: 10, weight: 20, unit: "lbs", icon: "💪" },
+      { id: "COTR", name: "Cable Overhead Triceps Ext (Rope)", sets: 3, reps: 12, weight: 40, unit: "lbs", icon: "🔗" }
+    ]
+  },
+  {
+    day: 2, label: "Day 2", est: 62,
+    exercises: [
+      { id: "DIB", name: "Dumbbell Incline Bench Press", sets: 4, reps: 6, weight: 50, unit: "lbs", icon: "🏋️" },
+      { id: "PR", name: "Pendlay Row", sets: 3, reps: 15, weight: 95, unit: "lbs", icon: "🏋️" },
+      { id: "PDCF", name: "Pec Deck Chest Fly", sets: 3, reps: 10, weight: 70, unit: "lbs", icon: "🔧" },
+      { id: "MLP", name: "Machine Lat Pullover", sets: 3, reps: 10, weight: 60, unit: "lbs", icon: "🔧" },
+      { id: "MSC", name: "Machine Seated Crunch", sets: 3, reps: 20, weight: 50, unit: "lbs", icon: "🔧" }
+    ]
+  },
+  {
+    day: 3, label: "Day 3", est: 58,
+    exercises: [
+      { id: "BSS", name: "Barbell Sumo Squat", sets: 4, reps: 8, weight: 135, unit: "lbs", icon: "🏋️" },
+      { id: "MLR", name: "Machine Lateral Raise", sets: 4, reps: 15, weight: 40, unit: "lbs", icon: "🔧" },
+      { id: "MSLE", name: "Machine Seated Leg Extension", sets: 4, reps: 12, weight: 70, unit: "lbs", icon: "🔧" },
+      { id: "DHC", name: "Dumbbell Hammer Curl", sets: 4, reps: 8, weight: 30, unit: "lbs", icon: "💪" },
+      { id: "COTR3", name: "Cable Overhead Triceps Ext (Rope)", sets: 4, reps: 10, weight: 35, unit: "lbs", icon: "🔗" }
+    ]
+  },
+  {
+    day: 4, label: "Day 4", est: 52,
+    exercises: [
+      { id: "CCGLP", name: "Cable Close-Grip Lat Pulldown", sets: 4, reps: 8, weight: 80, unit: "lbs", icon: "🔗" },
+      { id: "BBP4", name: "Barbell Bench Press", sets: 4, reps: 9, weight: 135, unit: "lbs", icon: "🏋️" },
+      { id: "DIRLR", name: "Dumbbell Incline Rear Lateral Raise", sets: 3, reps: 8, weight: 15, unit: "lbs", icon: "💪" },
+      { id: "CKC", name: "Cable Kneeling Crunch", sets: 4, reps: 10, weight: 40, unit: "lbs", icon: "🔗" },
+      { id: "MSCR", name: "Machine Standing Calf Raise", sets: 3, reps: 10, weight: 165, unit: "lbs", icon: "🔧" }
+    ]
+  }
+];
+
+const STORAGE_KEY = 'push_workout_v3';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+let state = loadState();
+if (!state.currentDay) state.currentDay = 1;
+if (!state.weights) state.weights = {};
+if (!state.session) state.session = null;
+
+let activeDay = state.currentDay;
+let editMode = false;
+
+function getWeight(exId, defaultW) {
+  return state.weights[exId] !== undefined ? state.weights[exId] : defaultW;
+}
+function getIncrease(exId, defaultW) {
+  return getWeight(exId, defaultW) - defaultW;
+}
+function videoSearchUrl(name) {
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(name + ' proper form')}`;
+}
+function initSession(dayIdx) {
+  const w = WORKOUTS[dayIdx];
+  return w.exercises.map(ex => ({
+    exId: ex.id,
+    sets: Array.from({length: ex.sets}, () => ({
+      reps: ex.reps, weight: getWeight(ex.id, ex.weight), done: false
+    }))
+  }));
+}
+function getSession() {
+  if (state.session && state.session.dayIndex === activeDay - 1) return state.session.data;
+  return null;
+}
+function isSessionActive() {
+  return state.session !== null;
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function render() {
+  renderTabs();
+  renderMeta();
+  renderSessionBanner();
+  renderExercises();
+  renderButtons();
+}
+
+function renderTabs() {
+  const c = document.getElementById('day-tabs');
+  c.innerHTML = WORKOUTS.map(w => `<button class="day-tab ${w.day === activeDay ? 'active' : ''}" onclick="switchDay(${w.day})">${w.label}</button>`).join('');
+  document.getElementById('today-label').textContent = activeDay === state.currentDay ? "Today's workout" : `Previewing ${WORKOUTS[activeDay-1].label}`;
+}
+
+function renderMeta() {
+  const w = WORKOUTS[activeDay - 1];
+  document.getElementById('day-meta').innerHTML = `<span class="day-meta-item">🏃 ${w.exercises.length} exercises</span><span class="day-meta-item">🕐 ${w.est} minutes</span>`;
+}
+
+function renderSessionBanner() {
+  const el = document.getElementById('session-status');
+  if (isSessionActive() && state.session.dayIndex === activeDay - 1) {
+    el.innerHTML = `<div class="session-banner"><div class="dot"></div>Workout in progress</div>`;
+  } else if (isSessionActive()) {
+    el.innerHTML = `<div class="session-banner" style="background:rgba(255,193,7,0.1);border-color:rgba(255,193,7,0.3);color:#ffc107;"><div class="dot" style="background:#ffc107;"></div>Active session on ${WORKOUTS[state.session.dayIndex].label}</div>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+function renderExercises() {
+  const w = WORKOUTS[activeDay - 1];
+  const session = getSession();
+  document.getElementById('exercises').innerHTML = w.exercises.map((ex, ei) => {
+    const curWeight = getWeight(ex.id, ex.weight);
+    const increase = getIncrease(ex.id, ex.weight);
+    const badgeText = ex.unit === 'BW' ? 'Bodyweight' : (increase > 0 ? `+${increase}lbs` : `${curWeight}lbs`);
+    const badgeZero = ex.unit === 'BW';
+    const vidUrl = videoSearchUrl(ex.name);
+
+    let setsHtml = '';
+    if (session) {
+      const exSession = session[ei];
+      const doneSets = exSession.sets.filter(s => s.done).length;
+      const pct = (doneSets / exSession.sets.length) * 100;
+      const allDone = doneSets === exSession.sets.length;
+      setsHtml = `
+        <div class="sets-list">
+          ${exSession.sets.map((s, si) => `
+            <div class="set-row">
+              <span class="set-num">SET ${si+1}</span>
+              <div class="set-check ${s.done ? 'done' : ''}" onclick="toggleSet(${ei},${si})"></div>
+              <div class="set-fields">
+                <div class="field-wrap">
+                  <div class="field-label">Reps</div>
+                  <input class="field-val ${editMode ? '' : 'readonly'}" type="number" inputmode="numeric" value="${s.reps}" onchange="updateSet(${ei},${si},'reps',this.value)">
+                </div>
+                <div class="field-wrap">
+                  <div class="field-label">${ex.unit === 'BW' ? '' : 'Weight'}</div>
+                  <input class="field-val ${editMode ? '' : 'readonly'}" type="number" inputmode="decimal" value="${ex.unit === 'BW' ? '' : s.weight}" ${ex.unit === 'BW' ? 'placeholder="BW" disabled' : ''} onchange="updateSet(${ei},${si},'weight',this.value)">
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="ex-progress"><div class="ex-progress-fill" style="width:${pct}%"></div></div>
+        ${allDone ? '<div class="ex-completed-banner">✓ Complete — weight bumped next session</div>' : ''}
+      `;
+    } else {
+      setsHtml = `<div class="ex-desc" style="margin-left:52px;margin-top:2px;">${ex.sets} sets × ${ex.reps} reps${ex.unit !== 'BW' ? ` @ ${curWeight}lbs` : ''}</div>`;
+    }
+
+    return `
+      <div class="ex-card">
+        <div class="ex-header">
+          <a class="ex-icon" href="${vidUrl}" target="_blank" rel="noopener" title="Watch form video">${ex.icon}</a>
+          <div class="ex-main">
+            <div class="ex-name">
+              <span>${escHtml(ex.name)}</span>
+              <a class="video-link" href="${vidUrl}" target="_blank" rel="noopener" title="Watch form video">▶</a>
+            </div>
+          </div>
+          <div class="ex-badge ${badgeZero ? 'zero' : ''}">${badgeZero ? '' : '⤴'} ${badgeText}</div>
+        </div>
+        ${setsHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderButtons() {
+  const session = getSession();
+  const c = document.getElementById('actions');
+  if (!session && !isSessionActive()) {
+    c.innerHTML = `<button class="btn btn-primary" onclick="startWorkout()">▶ Start workout</button>`;
+  } else if (!session && isSessionActive()) {
+    c.innerHTML = `<button class="btn btn-ghost" onclick="switchDay(${state.session.dayIndex + 1})">Resume ${WORKOUTS[state.session.dayIndex].label}</button>`;
+  } else {
+    const allDone = state.session.data.every(ex => ex.sets.every(s => s.done));
+    c.innerHTML = `
+      ${allDone ? `<button class="btn btn-success" onclick="confirmFinish()">✓ Finish & advance to next day</button>` : `<button class="btn btn-primary" onclick="confirmFinish()">Finish workout</button>`}
+      <button class="btn btn-danger" onclick="confirmEndEarly()">End workout early</button>
+    `;
+  }
+}
+
+function switchDay(day) {
+  if (isSessionActive() && state.session.dayIndex !== day - 1) {
+    // don't allow switching while session is active on another day
+    activeDay = day;
+    render();
+    return;
+  }
+  activeDay = day;
+  render();
+}
+
+function startWorkout() {
+  if (isSessionActive()) return;
+  state.session = { dayIndex: activeDay - 1, data: initSession(activeDay - 1), startedAt: Date.now() };
+  saveState();
+  render();
+}
+
+function toggleSet(ei, si) {
+  const session = getSession();
+  if (!session) return;
+  session[ei].sets[si].done = !session[ei].sets[si].done;
+  saveState();
+  render();
+}
+
+function updateSet(ei, si, field, val) {
+  const session = getSession();
+  if (!session) return;
+  session[ei].sets[si][field] = parseFloat(val) || 0;
+  saveState();
+}
+
+function toggleEdit() {
+  editMode = !editMode;
+  const b = document.getElementById('edit-btn');
+  b.textContent = editMode ? '✕ Done editing' : '✎ Edit';
+  b.classList.toggle('active', editMode);
+  render();
+}
+
+function confirmFinish() {
+  const session = getSession();
+  if (!session) return;
+  const w = WORKOUTS[activeDay - 1];
+  let bumped = [];
+  w.exercises.forEach((ex, ei) => {
+    const allDone = session[ei].sets.every(s => s.done);
+    if (allDone && ex.unit !== 'BW') bumped.push(ex.name);
+  });
+  const bumpMsg = bumped.length > 0
+    ? `These exercises will get +5lbs next session: ${bumped.join(', ')}.`
+    : 'No exercises had all sets completed, so no weight increases this time.';
+  openModal({
+    title: 'Finish workout?',
+    body: `${bumpMsg} You'll advance to ${WORKOUTS[activeDay % 4].label} next.`,
+    actions: [
+      { label: 'Finish & save', class: 'btn-success', onClick: finishWorkout },
+      { label: 'Cancel', class: 'btn-ghost', onClick: closeModal }
+    ]
+  });
+}
+
+function finishWorkout() {
+  const session = getSession();
+  if (!session) return closeModal();
+  const w = WORKOUTS[activeDay - 1];
+  w.exercises.forEach((ex, ei) => {
+    const allDone = session[ei].sets.every(s => s.done);
+    if (allDone && ex.unit !== 'BW') {
+      state.weights[ex.id] = getWeight(ex.id, ex.weight) + 5;
+    }
+  });
+  state.session = null;
+  state.currentDay = (activeDay % 4) + 1;
+  activeDay = state.currentDay;
+  saveState();
+  closeModal();
+  render();
+}
+
+function confirmEndEarly() {
+  openModal({
+    title: 'End workout early?',
+    body: 'Progress from this session will be discarded. Weights will not be bumped and you will not advance to the next day.',
+    actions: [
+      { label: 'Yes, end workout', class: 'btn-danger', onClick: endEarly },
+      { label: 'Keep going', class: 'btn-ghost', onClick: closeModal }
+    ]
+  });
+}
+
+function endEarly() {
+  state.session = null;
+  saveState();
+  closeModal();
+  render();
+}
+
+function openReset() {
+  openModal({
+    title: 'Reset all progress?',
+    body: 'This clears all weight increases and returns every exercise to its starting weight. This cannot be undone.',
+    actions: [
+      { label: 'Reset everything', class: 'btn-danger', onClick: resetAll },
+      { label: 'Cancel', class: 'btn-ghost', onClick: closeModal }
+    ]
+  });
+}
+
+function resetAll() {
+  state = { currentDay: 1, weights: {}, session: null };
+  activeDay = 1;
+  saveState();
+  closeModal();
+  render();
+}
+
+function openModal({ title, body, actions }) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').textContent = body;
+  const c = document.getElementById('modal-actions');
+  c.innerHTML = '';
+  actions.forEach(a => {
+    const b = document.createElement('button');
+    b.className = `btn ${a.class}`;
+    b.textContent = a.label;
+    b.onclick = a.onClick;
+    c.appendChild(b);
+  });
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') closeModal();
+});
+
+render();
+</script>
+</body>
+</html>
