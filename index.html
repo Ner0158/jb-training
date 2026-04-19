@@ -67,7 +67,7 @@ svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .field-val { font-size: 14px; color: #fff; background: #0d0d0d; border: 0.5px solid #222; border-radius: 7px; padding: 7px 6px; width: 100%; text-align: center; font-family: inherit; -moz-appearance: textfield; font-weight: 500; }
 .field-val::-webkit-outer-spin-button, .field-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .field-val:focus { outline: none; border-color: #60a5fa; background: #0a1525; }
-.field-val.readonly { pointer-events: none; border-color: transparent; background: transparent; }
+.field-val { cursor: text; }
 .ex-progress { margin-top: 10px; height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; }
 .ex-progress-fill { height: 100%; background: #1D9E75; border-radius: 2px; transition: width 0.4s ease; }
 .ex-completed-banner { margin-top: 9px; font-size: 12px; color: #1D9E75; font-weight: 600; display: flex; align-items: center; gap: 5px; }
@@ -80,9 +80,7 @@ svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .btn-danger { background: #1f1010; color: #f87171; border: 0.5px solid #3a1a1a; }
 .btn-ghost { background: #161616; color: #aaa; border: 0.5px solid #222; }
 
-.edit-toggle { display: flex; justify-content: center; padding: 16px; }
-.edit-btn { background: #141414; border: 0.5px solid #222; font-size: 13px; color: #777; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 20px; font-family: inherit; font-weight: 600; }
-.edit-btn.active { background: #0f2a4a; color: #60a5fa; border-color: #1a4a7a; }
+
 
 .session-banner { margin: 0 0 12px; padding: 11px 14px; background: rgba(96,165,250,0.08); border: 0.5px solid rgba(96,165,250,0.2); border-radius: 10px; font-size: 13px; color: #60a5fa; display: flex; align-items: center; gap: 9px; font-weight: 500; }
 .pulse-dot { width: 7px; height: 7px; border-radius: 50%; animation: pulse 1.5s infinite; flex-shrink: 0; }
@@ -124,15 +122,7 @@ svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
   <div class="day-tabs" id="day-tabs"></div>
   <div class="day-meta" id="day-meta"></div>
   <div class="workout-sections" id="workout-sections"></div>
-  <div class="edit-toggle">
-    <button class="edit-btn" id="edit-btn" onclick="toggleEdit()">
-      <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Edit
-    </button>
-  </div>
+
   <div class="actions" id="actions"></div>
 </div>
 
@@ -251,7 +241,6 @@ if (!state.weights)    state.weights    = {};
 if (!state.session)    state.session    = null;
 
 let activeDay = state.currentDay;
-let editMode  = false;
 
 const getW      = (id, def) => state.weights[id] !== undefined ? state.weights[id] : def;
 const getInc    = (id, def) => getW(id, def) - def;
@@ -263,7 +252,6 @@ const initSess  = idx => flattenExercises(WORKOUTS[idx]).map(ex => ({
 const getSess    = () => (state.session && state.session.dayIndex === activeDay-1) ? state.session.data : null;
 const sessActive = () => state.session !== null;
 
-// Build a flat index map: exId -> session index
 function buildExIndex(dayIdx) {
   const map = {};
   flattenExercises(WORKOUTS[dayIdx]).forEach((ex, i) => { map[ex.id] = i; });
@@ -348,11 +336,11 @@ function renderSections() {
                 <div class="set-fields">
                   <div class="field-wrap">
                     <div class="field-label">Reps</div>
-                    <input class="field-val ${editMode?'':'readonly'}" type="number" inputmode="numeric" value="${s.reps}" onchange="updateSet(${ei},${si},'reps',this.value)">
+                    <input class="field-val" type="number" inputmode="numeric" value="${s.reps}" onchange="updateSet(${ei},${si},'reps',this.value)">
                   </div>
                   <div class="field-wrap">
                     <div class="field-label">${isBW?'':'Weight'}</div>
-                    <input class="field-val ${editMode?'':'readonly'}" type="number" inputmode="decimal" value="${isBW?'':s.weight}" ${isBW?'placeholder="BW" disabled':''} onchange="updateSet(${ei},${si},'weight',this.value)">
+                    <input class="field-val" type="number" inputmode="decimal" value="${isBW?'':s.weight}" ${isBW?'placeholder="BW" disabled':''} onchange="updateSet(${ei},${si},'weight',this.value)">
                   </div>
                 </div>
               </div>
@@ -427,15 +415,6 @@ function updateSet(ei, si, field, val) {
   save();
 }
 
-function toggleEdit() {
-  editMode = !editMode;
-  const b = document.getElementById('edit-btn');
-  b.innerHTML = editMode
-    ? `${ICONS.closeCircle.replace('rgba(248,113,113,0.2)','rgba(96,165,250,0.2)').replace('#f87171','#60a5fa')} Done editing`
-    : `<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Edit`;
-  b.classList.toggle('active', editMode);
-  render();
-}
 
 function confirmFinish() {
   const sess = getSess(); if (!sess) return;
