@@ -17,78 +17,117 @@ body { padding-bottom: env(safe-area-inset-bottom); }
 svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .app { max-width: 480px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) 0 100px; min-height: 100vh; }
 
+/* ── Top bar ── */
 .top-bar { padding: 12px 20px 0; display: flex; justify-content: space-between; align-items: center; }
 .jb-logo { display: flex; align-items: center; gap: 10px; }
 .jb-logo-icon { width: 36px; height: 36px; background: #0f2a4a; border-radius: 9px; display: flex; align-items: center; justify-content: center; border: 0.5px solid #1a4a7a; }
 .jb-logo-text { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 2px; }
 .jb-logo-text span { color: #60a5fa; }
-.reset-btn { background: none; border: none; color: #444; cursor: pointer; padding: 6px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
-.reset-btn:active { color: #666; }
+.reset-btn { background: none; border: none; color: #444; cursor: pointer; padding: 6px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: color 0.2s; }
+.reset-btn:active { color: #777; transform: rotate(30deg); transition: transform 0.3s cubic-bezier(.34,1.56,.64,1); }
 
-.today-label { padding: 18px 20px 4px; font-size: 13px; color: #666; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+/* ── Tabs ── */
+.today-label { padding: 18px 20px 4px; font-size: 13px; color: #666; display: flex; align-items: center; gap: 6px; font-weight: 500; transition: opacity 0.2s; }
 .day-tabs { display: flex; overflow-x: auto; padding: 8px 20px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .day-tabs::-webkit-scrollbar { display: none; }
-.day-tab { flex-shrink: 0; padding: 8px 16px 14px 0; font-size: 28px; font-weight: 800; color: #2a2a2a; cursor: pointer; transition: color 0.2s; white-space: nowrap; background: none; border: none; font-family: inherit; }
+.day-tab { flex-shrink: 0; padding: 8px 16px 14px 0; font-size: 28px; font-weight: 800; color: #2a2a2a; cursor: pointer; transition: color 0.2s, transform 0.15s; white-space: nowrap; background: none; border: none; font-family: inherit; }
 .day-tab.active { color: #fff; }
+.day-tab:active { transform: scale(0.94); }
 .day-meta { padding: 4px 20px 16px; font-size: 13px; color: #666; display: flex; gap: 16px; }
 .day-meta-item { display: flex; align-items: center; gap: 6px; font-weight: 500; }
 
+/* ── Sections ── */
 .workout-sections { display: flex; flex-direction: column; gap: 10px; padding: 0 16px; }
 
-.equipment-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 16px; background: #0f2a4a; border-radius: 12px; border: 0.5px solid #1a4a7a; }
+/* ── Equipment header ── */
+.equipment-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 16px; background: #0f2a4a; border-radius: 12px; border: 0.5px solid #1a4a7a; transition: background 0.4s, border-color 0.4s; }
+.equipment-header.group-done { background: #0a2a1a; border-color: #1a5a3a; }
 .equip-label { flex: 1; }
-.equip-name { font-size: 13px; font-weight: 700; color: #60a5fa; letter-spacing: 0.8px; text-transform: uppercase; }
-.equip-count { font-size: 11px; color: #3a6a9a; margin-top: 1px; font-weight: 500; }
-.equip-done-badge { font-size: 11px; font-weight: 600; color: #1D9E75; background: rgba(29,158,117,0.15); border: 0.5px solid rgba(29,158,117,0.3); padding: 3px 9px; border-radius: 10px; }
+.equip-name { font-size: 13px; font-weight: 700; color: #60a5fa; letter-spacing: 0.8px; text-transform: uppercase; transition: color 0.4s; }
+.equipment-header.group-done .equip-name { color: #1D9E75; }
+.equip-count { font-size: 11px; color: #3a6a9a; margin-top: 1px; font-weight: 500; transition: color 0.4s; }
+.equipment-header.group-done .equip-count { color: #0f5a30; }
+.equip-done-badge { font-size: 11px; font-weight: 600; color: #1D9E75; background: rgba(29,158,117,0.15); border: 0.5px solid rgba(29,158,117,0.35); padding: 3px 9px; border-radius: 10px; animation: badgePop 0.4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes badgePop { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-.ex-group { background: #111; border-radius: 14px; overflow: hidden; border: 0.5px solid #1e1e1e; }
-.ex-card { background: #111; padding: 14px; border-bottom: 0.5px solid #1a1a1a; }
+/* ── Exercise group & card ── */
+.ex-group { background: #111; border-radius: 14px; overflow: hidden; border: 0.5px solid #1e1e1e; transition: border-color 0.4s; }
+.ex-group.group-done { border-color: rgba(29,158,117,0.2); }
+.ex-card { background: #111; padding: 14px; border-bottom: 0.5px solid #1a1a1a; transition: background 0.4s; animation: cardIn 0.25s ease both; }
+.ex-card.ex-done { background: #0c1f14; }
 .ex-card:last-child { border-bottom: none; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
 .ex-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.ex-icon-btn { width: 42px; height: 42px; border-radius: 11px; background: #0f2a4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; text-decoration: none; border: 0.5px solid #1a4a7a; }
-.ex-icon-btn:active { background: #1a3a5a; }
+.ex-icon-btn { width: 42px; height: 42px; border-radius: 11px; background: #0f2a4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; text-decoration: none; border: 0.5px solid #1a4a7a; transition: background 0.15s, transform 0.15s; }
+.ex-icon-btn:active { background: #1a3a5a; transform: scale(0.92); }
 .ex-main { flex: 1; min-width: 0; }
 .ex-name-row { display: flex; align-items: center; gap: 7px; }
-.ex-name { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.2; }
-.video-btn { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #1a3a5a; flex-shrink: 0; text-decoration: none; border: 0.5px solid #2a4a6a; }
-.video-btn:active { background: #2a4a6a; }
+.ex-name { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.2; transition: color 0.3s; }
+.ex-card.ex-done .ex-name { color: #1D9E75; }
+.video-btn { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #1a3a5a; flex-shrink: 0; text-decoration: none; border: 0.5px solid #2a4a6a; transition: transform 0.15s, background 0.15s; }
+.video-btn:active { background: #2a4a6a; transform: scale(0.88); }
 .ex-badge { flex-shrink: 0; display: flex; align-items: center; gap: 4px; background: #1D9E75; color: #d4f5e9; font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 20px; white-space: nowrap; }
 .ex-badge.zero { background: #1a1a1a; color: #555; border: 0.5px solid #252525; }
 
+/* ── Sets ── */
 .sets-list { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
-.set-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+.set-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; animation: setSlideIn 0.2s ease both; }
+@keyframes setSlideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
 .set-num { font-size: 10px; color: #444; width: 38px; flex-shrink: 0; font-weight: 700; letter-spacing: 0.4px; }
-.set-check { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #2a2a2a; background: transparent; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.set-check:active { transform: scale(0.88); }
-.set-check.done { background: #1D9E75; border-color: #1D9E75; }
+
+/* ── Check button ── */
+.set-check { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #2a2a2a; background: transparent; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.2s, border-color 0.2s, transform 0.15s; position: relative; overflow: visible; }
+.set-check:active { transform: scale(0.82); }
+.set-check.done { background: #1D9E75; border-color: #1D9E75; animation: checkPop 0.35s cubic-bezier(.34,1.56,.64,1); }
+@keyframes checkPop { 0% { transform: scale(0.6); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.set-check.done::after { content: ''; position: absolute; width: 36px; height: 36px; border-radius: 50%; background: rgba(29,158,117,0.25); animation: ripple 0.5s ease-out forwards; pointer-events: none; }
+@keyframes ripple { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
+
+/* ── Fields ── */
 .set-fields { display: flex; gap: 6px; flex: 1; }
 .field-wrap { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .field-label { font-size: 9px; color: #444; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
-.field-val { font-size: 14px; color: #fff; background: #0d0d0d; border: 0.5px solid #222; border-radius: 7px; padding: 7px 6px; width: 100%; text-align: center; font-family: inherit; -moz-appearance: textfield; font-weight: 500; }
+.field-val { font-size: 14px; color: #fff; background: #0d0d0d; border: 0.5px solid #222; border-radius: 7px; padding: 7px 6px; width: 100%; text-align: center; font-family: inherit; -moz-appearance: textfield; font-weight: 500; cursor: text; transition: border-color 0.15s, background 0.15s; }
 .field-val::-webkit-outer-spin-button, .field-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .field-val:focus { outline: none; border-color: #60a5fa; background: #0a1525; }
-.field-val { cursor: text; }
-.ex-progress { margin-top: 10px; height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; }
-.ex-progress-fill { height: 100%; background: #1D9E75; border-radius: 2px; transition: width 0.4s ease; }
-.ex-completed-banner { margin-top: 9px; font-size: 12px; color: #1D9E75; font-weight: 600; display: flex; align-items: center; gap: 5px; }
 
+/* ── Progress bar ── */
+.ex-progress { margin-top: 10px; height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; }
+.ex-progress-fill { height: 100%; background: #1D9E75; border-radius: 2px; transition: width 0.5s cubic-bezier(.34,1.2,.64,1); }
+
+/* ── Complete banner ── */
+.ex-completed-banner { margin-top: 9px; font-size: 12px; color: #1D9E75; font-weight: 600; display: flex; align-items: center; gap: 5px; animation: bannerSlide 0.3s ease; }
+@keyframes bannerSlide { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Full workout complete banner ── */
+.workout-complete-banner { margin: 0 0 14px; padding: 16px; background: linear-gradient(135deg, #0a2a1a, #0d3520); border: 1px solid rgba(29,158,117,0.4); border-radius: 14px; display: flex; align-items: center; gap: 14px; animation: bannerSlide 0.4s cubic-bezier(.34,1.2,.64,1); }
+.wc-icon { font-size: 28px; flex-shrink: 0; animation: trophyBounce 0.6s 0.2s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes trophyBounce { 0% { transform: scale(0) rotate(-15deg); } 70% { transform: scale(1.15) rotate(5deg); } 100% { transform: scale(1) rotate(0deg); } }
+.wc-text { flex: 1; }
+.wc-title { font-size: 15px; font-weight: 700; color: #1D9E75; }
+.wc-sub { font-size: 12px; color: #0f5a30; margin-top: 2px; font-weight: 500; }
+
+/* ── Actions ── */
 .actions { padding: 20px 16px 0; display: flex; flex-direction: column; gap: 10px; }
-.btn { width: 100%; padding: 16px; border-radius: 50px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.btn:active { transform: scale(0.97); opacity: 0.88; }
+.btn { width: 100%; padding: 16px; border-radius: 50px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.15s, opacity 0.15s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn:active { transform: scale(0.96); opacity: 0.85; }
 .btn-primary { background: #60a5fa; color: #000; }
-.btn-success { background: #1D9E75; color: #fff; }
+.btn-success { background: #1D9E75; color: #fff; animation: successPulse 0.4s ease; }
+@keyframes successPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(29,158,117,0); } 50% { box-shadow: 0 0 0 8px rgba(29,158,117,0.2); } }
 .btn-danger { background: #1f1010; color: #f87171; border: 0.5px solid #3a1a1a; }
 .btn-ghost { background: #161616; color: #aaa; border: 0.5px solid #222; }
 
-
-
+/* ── Session banner ── */
 .session-banner { margin: 0 0 12px; padding: 11px 14px; background: rgba(96,165,250,0.08); border: 0.5px solid rgba(96,165,250,0.2); border-radius: 10px; font-size: 13px; color: #60a5fa; display: flex; align-items: center; gap: 9px; font-weight: 500; }
 .pulse-dot { width: 7px; height: 7px; border-radius: 50%; animation: pulse 1.5s infinite; flex-shrink: 0; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
+/* ── Modal ── */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
 .modal-backdrop.open { display: flex; }
-.modal { background: #141414; border-radius: 20px 20px 0 0; padding: 28px 20px max(28px, env(safe-area-inset-bottom)); width: 100%; border-top: 0.5px solid #222; }
+.modal { background: #141414; border-radius: 20px 20px 0 0; padding: 28px 20px max(28px, env(safe-area-inset-bottom)); width: 100%; border-top: 0.5px solid #222; animation: modalUp 0.3s cubic-bezier(.34,1.2,.64,1); }
+@keyframes modalUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .modal-icon { display: flex; justify-content: center; margin-bottom: 12px; }
 .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; text-align: center; }
 .modal p { font-size: 14px; color: #777; margin-bottom: 24px; line-height: 1.6; text-align: center; }
@@ -117,12 +156,10 @@ svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
       </svg>
     </button>
   </div>
-
   <div class="today-label" id="today-label"></div>
   <div class="day-tabs" id="day-tabs"></div>
   <div class="day-meta" id="day-meta"></div>
   <div class="workout-sections" id="workout-sections"></div>
-
   <div class="actions" id="actions"></div>
 </div>
 
@@ -137,101 +174,89 @@ svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 
 <script>
 const ICONS = {
-  barbell:     `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="10.5" width="20" height="3" rx="1.5" fill="#60a5fa"/><rect x="1" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/><rect x="19.5" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/><rect x="0" y="9" width="2.5" height="6" rx="1.25" fill="#60a5fa"/><rect x="21.5" y="9" width="2.5" height="6" rx="1.25" fill="#60a5fa"/></svg>`,
-  dumbbell:    `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><rect x="6" y="10.5" width="12" height="3" rx="1.5" fill="#60a5fa"/><rect x="3" y="7.5" width="4" height="9" rx="2" fill="#60a5fa"/><rect x="17" y="7.5" width="4" height="9" rx="2" fill="#60a5fa"/><rect x="1.5" y="9.5" width="2.5" height="5" rx="1.25" fill="#60a5fa"/><rect x="20" y="9.5" width="2.5" height="5" rx="1.25" fill="#60a5fa"/></svg>`,
-  cable:       `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="#60a5fa"/><line x1="12" y1="2" x2="12" y2="9" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="15" x2="12" y2="22" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="2" y1="12" x2="9" y2="12" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="12" x2="22" y2="12" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/></svg>`,
-  machine:     `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" stroke="#60a5fa" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3.5" stroke="#60a5fa" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="1" fill="#60a5fa"/></svg>`,
-  body:        `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5" fill="#60a5fa"/><path d="M8 10h8l-1 6H9L8 10z" fill="#60a5fa"/><path d="M9 16l-2 6M15 16l2 6" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><path d="M8 10l-3 4M16 10l3 4" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>`,
-  play:        `<svg class="icon" width="10" height="10" viewBox="0 0 24 24" fill="#60a5fa"><path d="M5 3l14 9-14 9V3z"/></svg>`,
-  check:       `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  trendUp:     `<svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 7l-9 9-4-4-7 7" stroke="#d4f5e9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7h6v6" stroke="#d4f5e9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  checkCircle: `<svg class="icon" width="15" height="15" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#1D9E75"/><path d="M7 12l4 4 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  checkCircleLg:`<svg class="icon" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#1D9E75"/><path d="M7 12l4 4 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  playCircle:  `<svg class="icon" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="rgba(0,0,0,0.2)"/><path d="M10 8l6 4-6 4V8z" fill="#000"/></svg>`,
-  flag:        `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" fill="rgba(0,0,0,0.2)" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="22" x2="4" y2="15" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>`,
-  closeCircle: `<svg class="icon" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="rgba(248,113,113,0.2)"/><path d="M15 9l-6 6M9 9l6 6" stroke="#f87171" stroke-width="2" stroke-linecap="round"/></svg>`,
-  undo:        `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10h12a5 5 0 0 1 0 10H9" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 10l4-4M3 10l4 4" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  trophy:      `<svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M6 3h12l-1 7a5 5 0 0 1-10 0L6 3z" fill="#fbbf24"/><path d="M9 17v3M15 17v3M6 20h12" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/><path d="M6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/></svg>`,
-  warning:     `<svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 20h20L12 2z" fill="#f87171" opacity="0.2"/><path d="M12 2L2 20h20L12 2z" stroke="#f87171" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5M12 16.5v.5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/></svg>`,
-  refresh:     `<svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M4 4v5h5M20 20v-5h-5" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 9A8 8 0 0 0 5.7 5.7L4 9M4 15a8 8 0 0 0 14.3 3.3L20 15" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>`,
-  trash:       `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  back:        `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  today:       `<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#60a5fa" stroke-width="2" fill="none"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1.5" fill="#60a5fa"/></svg>`,
-  calendar:    `<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#60a5fa" stroke-width="2" fill="none"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>`,
-  time:        `<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#60a5fa" stroke-width="2" fill="none"/><path d="M12 7v5l3 3" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>`,
-  bbsmall:     `<svg class="icon" width="15" height="15" viewBox="0 0 24 24"><rect x="2" y="10.5" width="20" height="3" rx="1.5" fill="#60a5fa"/><rect x="1" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/><rect x="19.5" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/></svg>`,
-  benchIcon:   `<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="13" width="20" height="4" rx="2" fill="#60a5fa"/><rect x="4" y="9" width="16" height="4" rx="1.5" fill="#60a5fa" opacity="0.6"/><rect x="3" y="17" width="3" height="5" rx="1" fill="#60a5fa"/><rect x="18" y="17" width="3" height="5" rx="1" fill="#60a5fa"/></svg>`,
-  rackIcon:    `<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="2" width="3" height="20" rx="1.5" fill="#60a5fa"/><rect x="18" y="2" width="3" height="20" rx="1.5" fill="#60a5fa"/><rect x="3" y="9" width="18" height="3" rx="1.5" fill="#60a5fa" opacity="0.5"/><rect x="1" y="10" width="5" height="7" rx="1" fill="#60a5fa" opacity="0.3"/><rect x="18" y="10" width="5" height="7" rx="1" fill="#60a5fa" opacity="0.3"/></svg>`,
-  cableIcon:   `<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="#60a5fa"/><line x1="12" y1="2" x2="12" y2="9" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="15" x2="12" y2="22" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="2" y1="12" x2="9" y2="12" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="12" x2="22" y2="12" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/></svg>`,
-  machineIcon: `<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="#60a5fa" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3.5" stroke="#60a5fa" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="1" fill="#60a5fa"/></svg>`,
-  floorIcon:   `<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2.5" fill="#60a5fa"/><path d="M8 10h8l-1 6H9L8 10z" fill="#60a5fa"/><path d="M9 16l-2 5M15 16l2 5" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><path d="M8 10l-3 4M16 10l3 4" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>`,
+  barbell:      `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="10.5" width="20" height="3" rx="1.5" fill="#60a5fa"/><rect x="1" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/><rect x="19.5" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/><rect x="0" y="9" width="2.5" height="6" rx="1.25" fill="#60a5fa"/><rect x="21.5" y="9" width="2.5" height="6" rx="1.25" fill="#60a5fa"/></svg>`,
+  dumbbell:     `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><rect x="6" y="10.5" width="12" height="3" rx="1.5" fill="#60a5fa"/><rect x="3" y="7.5" width="4" height="9" rx="2" fill="#60a5fa"/><rect x="17" y="7.5" width="4" height="9" rx="2" fill="#60a5fa"/><rect x="1.5" y="9.5" width="2.5" height="5" rx="1.25" fill="#60a5fa"/><rect x="20" y="9.5" width="2.5" height="5" rx="1.25" fill="#60a5fa"/></svg>`,
+  cable:        `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="#60a5fa"/><line x1="12" y1="2" x2="12" y2="9" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="15" x2="12" y2="22" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="2" y1="12" x2="9" y2="12" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="12" x2="22" y2="12" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  machine:      `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" stroke="#60a5fa" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3.5" stroke="#60a5fa" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="1" fill="#60a5fa"/></svg>`,
+  body:         `<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5" fill="#60a5fa"/><path d="M8 10h8l-1 6H9L8 10z" fill="#60a5fa"/><path d="M9 16l-2 6M15 16l2 6" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><path d="M8 10l-3 4M16 10l3 4" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>`,
+  play:         `<svg class="icon" width="10" height="10" viewBox="0 0 24 24" fill="#60a5fa"><path d="M5 3l14 9-14 9V3z"/></svg>`,
+  check:        `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  trendUp:      `<svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 7l-9 9-4-4-7 7" stroke="#d4f5e9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7h6v6" stroke="#d4f5e9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  checkCircle:  `<svg class="icon" width="15" height="15" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#1D9E75"/><path d="M7 12l4 4 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  checkCircleLg:`<svg class="icon" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="rgba(0,0,0,0.15)"/><path d="M7 12l4 4 6-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  playCircle:   `<svg class="icon" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="rgba(0,0,0,0.2)"/><path d="M10 8l6 4-6 4V8z" fill="#000"/></svg>`,
+  flag:         `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" fill="rgba(0,0,0,0.15)" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="22" x2="4" y2="15" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>`,
+  closeCircle:  `<svg class="icon" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="rgba(248,113,113,0.2)"/><path d="M15 9l-6 6M9 9l6 6" stroke="#f87171" stroke-width="2" stroke-linecap="round"/></svg>`,
+  undo:         `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10h12a5 5 0 0 1 0 10H9" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 10l4-4M3 10l4 4" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  trophy:       `<svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M6 3h12l-1 7a5 5 0 0 1-10 0L6 3z" fill="#fbbf24"/><path d="M9 17v3M15 17v3M6 20h12" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/><path d="M6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/></svg>`,
+  warning:      `<svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 20h20L12 2z" fill="#f87171" opacity="0.2"/><path d="M12 2L2 20h20L12 2z" stroke="#f87171" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5M12 16.5v.5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/></svg>`,
+  refresh:      `<svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M4 4v5h5M20 20v-5h-5" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 9A8 8 0 0 0 5.7 5.7L4 9M4 15a8 8 0 0 0 14.3 3.3L20 15" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>`,
+  trash:        `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  back:         `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  today:        `<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#60a5fa" stroke-width="2" fill="none"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1.5" fill="#60a5fa"/></svg>`,
+  calendar:     `<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#60a5fa" stroke-width="2" fill="none"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>`,
+  time:         `<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#60a5fa" stroke-width="2" fill="none"/><path d="M12 7v5l3 3" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>`,
+  bbsmall:      `<svg class="icon" width="15" height="15" viewBox="0 0 24 24"><rect x="2" y="10.5" width="20" height="3" rx="1.5" fill="#60a5fa"/><rect x="1" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/><rect x="19.5" y="7" width="3.5" height="10" rx="1.75" fill="#60a5fa"/></svg>`,
 };
 
-// Equipment groups define the order and grouping for each day
-// Each group: { equipment, label, icon, exercises: [...] }
 const WORKOUTS = [
   { day:1, label:"Day 1", est:50, groups:[
-    { equipment:"bench", label:"Bench", icon:"benchIcon", exercises:[
+    { label:"Bench", exercises:[
       {id:"BBP",  name:"Barbell Bench Press",               sets:3, reps:8,  weight:135, unit:"lbs", icon:"barbell"},
       {id:"DRD",  name:"Dumbbell Romanian Deadlift",        sets:3, reps:10, weight:50,  unit:"lbs", icon:"dumbbell"},
       {id:"SDIC", name:"Seated Dumbbell Incline Curl",      sets:3, reps:10, weight:20,  unit:"lbs", icon:"dumbbell"},
     ]},
-    { equipment:"cable", label:"Cable Station", icon:"cableIcon", exercises:[
+    { label:"Cable Station", exercises:[
       {id:"COTR", name:"Cable Overhead Triceps Ext (Rope)", sets:3, reps:12, weight:40,  unit:"lbs", icon:"cable"},
     ]},
-    { equipment:"floor", label:"Open Floor", icon:"floorIcon", exercises:[
+    { label:"Open Floor", exercises:[
       {id:"WL",   name:"Walking Lunge",                     sets:3, reps:16, weight:0,   unit:"BW",  icon:"body"},
     ]},
   ]},
   { day:2, label:"Day 2", est:62, groups:[
-    { equipment:"bench", label:"Bench", icon:"benchIcon", exercises:[
+    { label:"Bench", exercises:[
       {id:"DIB",  name:"Dumbbell Incline Bench Press",      sets:4, reps:6,  weight:50,  unit:"lbs", icon:"dumbbell"},
     ]},
-    { equipment:"rack", label:"Squat Rack", icon:"rackIcon", exercises:[
+    { label:"Squat Rack", exercises:[
       {id:"PR",   name:"Pendlay Row",                       sets:3, reps:15, weight:95,  unit:"lbs", icon:"barbell"},
     ]},
-    { equipment:"machine", label:"Machine Area", icon:"machineIcon", exercises:[
+    { label:"Machine Area", exercises:[
       {id:"PDCF", name:"Pec Deck Chest Fly",                sets:3, reps:10, weight:70,  unit:"lbs", icon:"machine"},
       {id:"MLP",  name:"Machine Lat Pullover",              sets:3, reps:10, weight:60,  unit:"lbs", icon:"machine"},
       {id:"MSC",  name:"Machine Seated Crunch",             sets:3, reps:20, weight:50,  unit:"lbs", icon:"machine"},
     ]},
   ]},
   { day:3, label:"Day 3", est:58, groups:[
-    { equipment:"rack", label:"Squat Rack", icon:"rackIcon", exercises:[
+    { label:"Squat Rack", exercises:[
       {id:"BSS",  name:"Barbell Sumo Squat",                sets:4, reps:8,  weight:135, unit:"lbs", icon:"barbell"},
     ]},
-    { equipment:"machine", label:"Machine Area", icon:"machineIcon", exercises:[
+    { label:"Machine Area", exercises:[
       {id:"MLR",  name:"Machine Lateral Raise",             sets:4, reps:15, weight:40,  unit:"lbs", icon:"machine"},
       {id:"MSLE", name:"Machine Seated Leg Extension",      sets:4, reps:12, weight:70,  unit:"lbs", icon:"machine"},
     ]},
-    { equipment:"bench", label:"Bench", icon:"benchIcon", exercises:[
+    { label:"Bench", exercises:[
       {id:"DHC",  name:"Dumbbell Hammer Curl",              sets:4, reps:8,  weight:30,  unit:"lbs", icon:"dumbbell"},
     ]},
-    { equipment:"cable", label:"Cable Station", icon:"cableIcon", exercises:[
+    { label:"Cable Station", exercises:[
       {id:"COTR3",name:"Cable Overhead Triceps Ext (Rope)", sets:4, reps:10, weight:35,  unit:"lbs", icon:"cable"},
     ]},
   ]},
   { day:4, label:"Day 4", est:52, groups:[
-    { equipment:"cable", label:"Cable Station", icon:"cableIcon", exercises:[
+    { label:"Cable Station", exercises:[
       {id:"CCGLP",name:"Cable Close-Grip Lat Pulldown",     sets:4, reps:8,  weight:80,  unit:"lbs", icon:"cable"},
       {id:"CKC",  name:"Cable Kneeling Crunch",             sets:4, reps:10, weight:40,  unit:"lbs", icon:"cable"},
     ]},
-    { equipment:"bench", label:"Bench", icon:"benchIcon", exercises:[
+    { label:"Bench", exercises:[
       {id:"BBP4", name:"Barbell Bench Press",               sets:4, reps:9,  weight:135, unit:"lbs", icon:"barbell"},
       {id:"DIRLR",name:"Dumbbell Incline Rear Lateral Raise",sets:3,reps:8,  weight:15,  unit:"lbs", icon:"dumbbell"},
     ]},
-    { equipment:"machine", label:"Machine Area", icon:"machineIcon", exercises:[
+    { label:"Machine Area", exercises:[
       {id:"MSCR", name:"Machine Standing Calf Raise",       sets:3, reps:10, weight:165, unit:"lbs", icon:"machine"},
     ]},
   ]},
 ];
 
-// Flatten all exercises for session indexing
-function flattenExercises(day) {
-  return day.groups.flatMap(g => g.exercises);
-}
-
-const KEY  = 'jb_workout_v3';
+const KEY  = 'jb_workout_v4';
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY)||'{}'); } catch(e) { return {}; } };
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} };
 
@@ -240,23 +265,20 @@ if (!state.currentDay) state.currentDay = 1;
 if (!state.weights)    state.weights    = {};
 if (!state.session)    state.session    = null;
 
+// Always open on today's day
 let activeDay = state.currentDay;
 
 const getW      = (id, def) => state.weights[id] !== undefined ? state.weights[id] : def;
 const getInc    = (id, def) => getW(id, def) - def;
 const vidUrl    = name => `https://www.youtube.com/results?search_query=${encodeURIComponent(name+' exercise proper form')}`;
-const initSess  = idx => flattenExercises(WORKOUTS[idx]).map(ex => ({
+const flatten   = w => w.groups.flatMap(g => g.exercises);
+const initSess  = idx => flatten(WORKOUTS[idx]).map(ex => ({
   exId: ex.id,
   sets: Array.from({length: ex.sets}, () => ({reps: ex.reps, weight: getW(ex.id, ex.weight), done: false}))
 }));
 const getSess    = () => (state.session && state.session.dayIndex === activeDay-1) ? state.session.data : null;
 const sessActive = () => state.session !== null;
-
-function buildExIndex(dayIdx) {
-  const map = {};
-  flattenExercises(WORKOUTS[dayIdx]).forEach((ex, i) => { map[ex.id] = i; });
-  return map;
-}
+const buildIdx   = idx => { const m={}; flatten(WORKOUTS[idx]).forEach((ex,i)=>m[ex.id]=i); return m; };
 
 function render() { renderTabs(); renderMeta(); renderSections(); renderButtons(); }
 
@@ -271,51 +293,56 @@ function renderTabs() {
 }
 
 function renderMeta() {
-  const w     = WORKOUTS[activeDay-1];
-  const total = flattenExercises(w).length;
+  const w = WORKOUTS[activeDay-1];
   document.getElementById('day-meta').innerHTML = `
-    <span class="day-meta-item">${ICONS.bbsmall} ${total} exercises</span>
+    <span class="day-meta-item">${ICONS.bbsmall} ${flatten(w).length} exercises</span>
     <span class="day-meta-item">${ICONS.time} ${w.est} minutes</span>
   `;
 }
 
 function renderSections() {
-  const w       = WORKOUTS[activeDay-1];
-  const sess    = getSess();
-  const exIndex = buildExIndex(activeDay-1);
-  let bannerHtml = '';
+  const w      = WORKOUTS[activeDay-1];
+  const sess   = getSess();
+  const exIdx  = buildIdx(activeDay-1);
+  const allFlat = flatten(w);
+  const workoutAllDone = sess && allFlat.every((ex,ei) => sess[ei].sets.every(s=>s.done));
 
-  if (sessActive() && state.session.dayIndex === activeDay-1) {
+  let bannerHtml = '';
+  if (workoutAllDone) {
+    bannerHtml = `
+      <div class="workout-complete-banner">
+        <div class="wc-icon">🏆</div>
+        <div class="wc-text">
+          <div class="wc-title">Workout complete!</div>
+          <div class="wc-sub">All sets done — tap finish to save progress</div>
+        </div>
+      </div>`;
+  } else if (sessActive() && state.session.dayIndex === activeDay-1) {
     bannerHtml = `<div class="session-banner"><div class="pulse-dot" style="background:#60a5fa;"></div>Workout in progress</div>`;
   } else if (sessActive()) {
     bannerHtml = `<div class="session-banner" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:#fbbf24;"><div class="pulse-dot" style="background:#fbbf24;"></div>Active session on ${WORKOUTS[state.session.dayIndex].label}</div>`;
   }
 
   const sectionsHtml = w.groups.map(group => {
-    // Check if all exercises in this group are done
-    let groupDone = false;
-    if (sess) {
-      groupDone = group.exercises.every(ex => {
-        const ei = exIndex[ex.id];
-        return sess[ei].sets.every(s => s.done);
-      });
-    }
+    const groupDone = sess && group.exercises.every(ex => {
+      const ei = exIdx[ex.id];
+      return sess[ei].sets.every(s => s.done);
+    });
 
     const headerHtml = `
-      <div class="equipment-header">
+      <div class="equipment-header ${groupDone?'group-done':''}">
         <div class="equip-label">
           <div class="equip-name">${group.label}</div>
           <div class="equip-count">${group.exercises.length} exercise${group.exercises.length>1?'s':''}</div>
         </div>
-        ${sess && groupDone ? `<div class="equip-done-badge">${ICONS.checkCircle} Done</div>` : ''}
-      </div>
-    `;
+        ${groupDone ? `<div class="equip-done-badge">${ICONS.checkCircle} Done</div>` : ''}
+      </div>`;
 
-    const exercisesHtml = group.exercises.map(ex => {
-      const ei    = exIndex[ex.id];
-      const curW  = getW(ex.id, ex.weight);
-      const inc   = getInc(ex.id, ex.weight);
-      const isBW  = ex.unit === 'BW';
+    const exercisesHtml = group.exercises.map((ex, delay) => {
+      const ei        = exIdx[ex.id];
+      const curW      = getW(ex.id, ex.weight);
+      const inc       = getInc(ex.id, ex.weight);
+      const isBW      = ex.unit === 'BW';
       const badgeLabel = isBW ? 'Bodyweight' : (inc > 0 ? `+${inc}lbs` : `${curW}lbs`);
       const badgeIcon  = inc > 0 ? ICONS.trendUp : '';
 
@@ -324,11 +351,11 @@ function renderSections() {
         const exS       = sess[ei];
         const doneCount = exS.sets.filter(s => s.done).length;
         const pct       = (doneCount / exS.sets.length) * 100;
-        const allDone   = doneCount === exS.sets.length;
+        const exDone    = doneCount === exS.sets.length;
         setsHtml = `
           <div class="sets-list">
             ${exS.sets.map((s, si) => `
-              <div class="set-row">
+              <div class="set-row" style="animation-delay:${si*40}ms">
                 <span class="set-num">SET ${si+1}</span>
                 <div class="set-check ${s.done?'done':''}" onclick="toggleSet(${ei},${si})">
                   ${s.done ? ICONS.check : ''}
@@ -343,18 +370,18 @@ function renderSections() {
                     <input class="field-val" type="number" inputmode="decimal" value="${isBW?'':s.weight}" ${isBW?'placeholder="BW" disabled':''} onchange="updateSet(${ei},${si},'weight',this.value)">
                   </div>
                 </div>
-              </div>
-            `).join('')}
+              </div>`).join('')}
           </div>
           <div class="ex-progress"><div class="ex-progress-fill" style="width:${pct}%"></div></div>
-          ${allDone ? `<div class="ex-completed-banner">${ICONS.checkCircle} Complete — weight bumped next session</div>` : ''}
+          ${exDone ? `<div class="ex-completed-banner">${ICONS.checkCircle} Complete — weight bumped next session</div>` : ''}
         `;
       } else {
         setsHtml = `<div style="font-size:12px;color:#444;margin-top:5px;margin-left:52px;">${ex.sets} sets &times; ${ex.reps} reps${!isBW?` @ ${curW}lbs`:''}</div>`;
       }
 
+      const exDoneClass = sess && sess[ei].sets.every(s=>s.done) ? 'ex-done' : '';
       return `
-        <div class="ex-card">
+        <div class="ex-card ${exDoneClass}" style="animation-delay:${delay*60}ms">
           <div class="ex-header">
             <a class="ex-icon-btn" href="${vidUrl(ex.name)}" target="_blank" rel="noopener">${ICONS[ex.icon]}</a>
             <div class="ex-main">
@@ -366,11 +393,10 @@ function renderSections() {
             <div class="ex-badge ${isBW?'zero':''}">${badgeIcon}${badgeLabel}</div>
           </div>
           ${setsHtml}
-        </div>
-      `;
+        </div>`;
     }).join('');
 
-    return `${headerHtml}<div class="ex-group">${exercisesHtml}</div>`;
+    return `${headerHtml}<div class="ex-group ${groupDone?'group-done':''}">${exercisesHtml}</div>`;
   }).join('');
 
   document.getElementById('workout-sections').innerHTML = bannerHtml + sectionsHtml;
@@ -415,12 +441,11 @@ function updateSet(ei, si, field, val) {
   save();
 }
 
-
 function confirmFinish() {
   const sess = getSess(); if (!sess) return;
   const w      = WORKOUTS[activeDay-1];
-  const flat   = flattenExercises(w);
-  const bumped = flat.filter((ex, ei) => sess[ei].sets.every(s=>s.done) && ex.unit!=='BW').map(ex=>ex.name);
+  const flat   = flatten(w);
+  const bumped = flat.filter((ex,ei) => sess[ei].sets.every(s=>s.done) && ex.unit!=='BW').map(ex=>ex.name);
   const msg    = bumped.length > 0
     ? `+5lbs applied next session: ${bumped.join(', ')}.`
     : 'No exercises fully completed — no weight increases this time.';
@@ -437,12 +462,13 @@ function confirmFinish() {
 
 function finishWorkout() {
   const sess = getSess(); if (!sess) return closeModal();
-  const flat = flattenExercises(WORKOUTS[activeDay-1]);
+  const flat = flatten(WORKOUTS[activeDay-1]);
   flat.forEach((ex, ei) => {
     if (sess[ei].sets.every(s=>s.done) && ex.unit!=='BW')
       state.weights[ex.id] = getW(ex.id, ex.weight) + 5;
   });
   state.session    = null;
+  // Advance to next day and save as currentDay so next load opens there
   state.currentDay = (activeDay % 4) + 1;
   activeDay        = state.currentDay;
   save(); closeModal(); render();
