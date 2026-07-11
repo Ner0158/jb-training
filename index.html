@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#171A20">
+<title>JB Workout</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='12' fill='%23171A20'/><text x='90' y='116' font-family='Helvetica,Arial,sans-serif' font-size='72' font-weight='500' fill='%233E6AE1' text-anchor='middle'>JB</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='12' fill='%23171A20'/><text x='50' y='65' font-family='Helvetica,Arial,sans-serif' font-size='42' font-weight='500' fill='%233E6AE1' text-anchor='middle'>JB</text></svg>">
+<style>
+/* ============================================================
+   TESLA MOBILE DESIGN TOKENS
+   All UI decisions reference these tokens only.
+   The single exception is --danger, added with explicit approval
+   because the palette carries no destructive/red color.
+   ============================================================ */
+:root {
+  /* color */
+  --color-primary:      #3E6AE1;
+  --color-white:        #FFFFFF;
+  --color-black:        #000000;
+  --color-carbon-dark:  #171A20;
+  --color-graphite:     #393C41;
+  --color-pewter:       #5C5E62;
+  --color-silver-fog:   #8E8E8E;
+  --color-cloud-gray:   #EEEEEE;
+  --color-pale-silver:  #D0D1D2;
+  --surface-dark:       #171A20;
+  --danger:             #E82127; /* outside token set — approved */
+  --surface-done:       rgba(62, 106, 225, 0.10); /* subtle tint of --color-primary, per request for completed state */
+
+  /* type */
+  --font-family: 'Universal Sans', 'Gotham', Helvetica, system-ui, sans-serif;
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fs-display:   48px;
+  --fs-title:     22px;
+  --fs-body:      16px;
+  --fs-secondary: 14px;
+  --fs-label:     12px;
+  --fs-micro:     11px;
+
+  /* spacing */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-6: 24px; --sp-8: 32px; --sp-16: 64px;
+
+  /* radius */
+  --r-xs: 0px; --r-sm: 4px; --r-md: 12px; --r-round: 9999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--surface-dark);
+  color: var(--color-white);
+  font-family: var(--font-family);
+  font-weight: var(--fw-regular);
+  min-height: 100vh;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+body { padding-bottom: env(safe-area-inset-bottom); }
+
+svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+
+.app { max-width: 480px; margin: 0 auto; padding: max(var(--sp-3), env(safe-area-inset-top)) 0 var(--sp-16); min-height: 100vh; }
+
+/* ── Top bar ── */
+.top-bar { padding: var(--sp-4) var(--sp-6) var(--sp-2); display: flex; justify-content: space-between; align-items: center; }
+.brand { font-size: var(--fs-body); font-weight: var(--fw-medium); letter-spacing: 0.02em; }
+.brand .b1 { color: var(--color-primary); }
+.brand .b2 { color: var(--color-silver-fog); }
+.icon-btn { padding: var(--sp-2); border-radius: var(--r-sm); background: transparent; border: 1px solid var(--color-graphite); color: var(--color-silver-fog); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+.icon-btn:active { color: var(--color-white); border-color: var(--color-pale-silver); }
+
+/* ── Day pills ── */
+.day-tabs { display: flex; overflow-x: auto; padding: var(--sp-3) var(--sp-4) var(--sp-1); scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: var(--sp-2); }
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab { flex-shrink: 0; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-round); background: transparent; border: 1px solid var(--color-graphite); color: var(--color-silver-fog); font-family: inherit; font-size: var(--fs-secondary); font-weight: var(--fw-medium); cursor: pointer; transition: color 0.15s, background 0.15s, border-color 0.15s; white-space: nowrap; }
+.day-tab.active { background: var(--color-primary); color: var(--color-white); border-color: var(--color-primary); }
+
+/* ── Today label ── */
+.today-label { padding: var(--sp-2) var(--sp-6) 0; font-size: var(--fs-label); color: var(--color-silver-fog); font-weight: var(--fw-regular); display: flex; align-items: center; gap: var(--sp-2); }
+
+/* ── Hero ── */
+.hero { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); padding: var(--sp-6) var(--sp-6) var(--sp-4); }
+.hero-ring-wrap { position: relative; width: 176px; height: 176px; }
+.hero-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--color-graphite); stroke-width: 8; }
+.ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease, stroke 0.3s; }
+.hero-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hero-num { font-size: var(--fs-display); font-weight: var(--fw-medium); line-height: 1; }
+.hero-day { font-size: var(--fs-micro); font-weight: var(--fw-medium); color: var(--color-silver-fog); letter-spacing: 0.16em; margin-top: var(--sp-2); }
+.hero-info { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); }
+.hero-status { font-size: var(--fs-micro); font-weight: var(--fw-medium); letter-spacing: 0.12em; color: var(--color-silver-fog); padding: var(--sp-1) var(--sp-3); border: 1px solid var(--color-graphite); border-radius: var(--r-round); transition: color 0.3s, border-color 0.3s; }
+.hero-status.is-active, .hero-status.is-complete { color: var(--color-primary); border-color: var(--color-primary); }
+.hero-stats { display: flex; gap: var(--sp-4); }
+.hero-stat { display: flex; align-items: center; gap: var(--sp-1); font-size: var(--fs-secondary); color: var(--color-silver-fog); font-weight: var(--fw-regular); }
+
+/* ── Sections wrapper ── */
+.workout-sections { display: flex; flex-direction: column; padding: 0 var(--sp-4); }
+
+/* ── Equipment header ── */
+.equipment-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-2); padding: var(--sp-6) var(--sp-2) var(--sp-2); }
+.equip-name { font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--color-silver-fog); letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s; }
+.equipment-header.group-done .equip-name { color: var(--color-primary); }
+.equip-count { font-size: var(--fs-micro); color: var(--color-pewter); margin-top: var(--sp-1); font-weight: var(--fw-regular); }
+.equip-done-badge { font-size: var(--fs-micro); font-weight: var(--fw-medium); letter-spacing: 0.08em; color: var(--color-primary); border: 1px solid var(--color-primary); padding: var(--sp-1) var(--sp-2); border-radius: var(--r-round); }
+
+/* ── Exercise group & card ── */
+.ex-group { background: transparent; border: 1px solid var(--color-graphite); border-radius: var(--r-md); overflow: hidden; transition: border-color 0.3s; }
+.ex-group.group-done { border-color: var(--color-primary); }
+.ex-card { padding: var(--sp-4); border-bottom: 1px solid var(--color-graphite); transition: none; animation: cardIn 0.2s ease both; }
+.ex-card:last-child { border-bottom: none; }
+@keyframes cardIn { from { opacity: 0; } to { opacity: 1; } }
+
+.ex-header { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.ex-icon-btn { padding: var(--sp-2); border-radius: var(--r-sm); background: transparent; border: 1px solid var(--color-graphite); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; text-decoration: none; color: var(--color-silver-fog); transition: color 0.15s, border-color 0.15s; }
+.ex-icon-btn:active { color: var(--color-primary); border-color: var(--color-primary); }
+.ex-main { flex: 1; min-width: 0; }
+.ex-name-row { display: flex; align-items: center; gap: var(--sp-2); }
+.ex-name { font-size: var(--fs-body); font-weight: var(--fw-regular); color: var(--color-white); line-height: 1.3; transition: color 0.3s; }
+.ex-card.ex-done { background: var(--surface-done); }
+.ex-card.ex-done .ex-name { color: var(--color-primary); }
+.video-btn { display: inline-flex; align-items: center; justify-content: center; padding: var(--sp-1); border-radius: var(--r-sm); background: transparent; color: var(--color-pewter); flex-shrink: 0; text-decoration: none; transition: color 0.15s; }
+.video-btn:active { color: var(--color-primary); }
+.ex-badge { flex-shrink: 0; display: inline-flex; align-items: center; gap: var(--sp-1); border: 1px solid var(--color-graphite); color: var(--color-silver-fog); font-size: var(--fs-label); font-weight: var(--fw-medium); padding: var(--sp-1) var(--sp-3); border-radius: var(--r-round); white-space: nowrap; }
+.ex-badge.up { color: var(--color-primary); border-color: var(--color-primary); }
+.ex-badge.zero { color: var(--color-pewter); }
+.badge-trend { display: inline-flex; }
+
+/* ── Sets ── */
+.sets-head { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); padding-left: calc(var(--sp-8) + var(--sp-3) + var(--sp-8) + var(--sp-3)); }
+.sets-head .field-label { flex: 1; }
+.sets-list { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-2); }
+.set-row { display: flex; align-items: center; gap: var(--sp-3); animation: fadeIn 0.2s ease both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.set-num { font-size: var(--fs-micro); color: var(--color-pewter); width: var(--sp-8); flex-shrink: 0; font-weight: var(--fw-regular); letter-spacing: 0.04em; }
+
+/* ── Check button ── */
+.set-check { width: var(--sp-8); height: var(--sp-8); border-radius: var(--r-round); border: 1px solid var(--color-pale-silver); background: transparent; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: transparent; transition: background 0.2s, border-color 0.2s; }
+.set-check.done { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-white); }
+
+/* ── Fields ── */
+.set-fields { display: flex; gap: var(--sp-2); flex: 1; }
+.field-wrap { flex: 1; display: flex; }
+.field-label { font-size: var(--fs-micro); color: var(--color-pewter); text-transform: uppercase; letter-spacing: 0.08em; font-weight: var(--fw-medium); }
+.field-val { font-size: var(--fs-body); color: var(--color-white); background: var(--color-graphite); border: 1px solid var(--color-graphite); border-radius: var(--r-sm); padding: var(--sp-3) var(--sp-2); width: 100%; text-align: center; -moz-appearance: textfield; font-weight: var(--fw-medium); font-family: inherit; cursor: text; transition: border-color 0.15s, background 0.15s; }
+.field-val::-webkit-outer-spin-button, .field-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.field-val:focus { outline: none; border-color: var(--color-primary); background: var(--surface-dark); }
+.field-val:disabled { color: var(--color-pewter); }
+
+/* ── Progress bar ── */
+.ex-progress { margin-top: var(--sp-4); height: var(--sp-1); background: var(--color-graphite); border-radius: var(--r-round); overflow: hidden; }
+.ex-progress-fill { height: 100%; background: var(--color-primary); border-radius: var(--r-round); transition: width 0.4s ease; }
+
+/* ── Complete banner (per-exercise) ── */
+.ex-completed-banner { margin-top: var(--sp-3); font-size: var(--fs-label); color: var(--color-primary); font-weight: var(--fw-regular); display: flex; align-items: center; gap: var(--sp-2); }
+
+/* ── Full workout complete banner ── */
+.workout-complete-banner { margin: 0 0 var(--sp-4); padding: var(--sp-4); background: var(--color-primary); border-radius: var(--r-md); display: flex; align-items: center; gap: var(--sp-4); color: var(--color-white); animation: fadeIn 0.3s ease; }
+.wc-icon { flex-shrink: 0; display: flex; }
+.wc-text { flex: 1; }
+.wc-title { font-size: var(--fs-title); font-weight: var(--fw-medium); line-height: 1.1; }
+.wc-sub { font-size: var(--fs-label); font-weight: var(--fw-regular); color: var(--color-cloud-gray); margin-top: var(--sp-1); }
+
+/* ── Actions ── */
+.actions { padding: var(--sp-6) var(--sp-4) 0; display: flex; flex-direction: column; gap: var(--sp-3); }
+.btn { width: 100%; padding: var(--sp-4); border: 1px solid transparent; border-radius: var(--r-sm); font-family: inherit; font-size: var(--fs-body); font-weight: var(--fw-medium); cursor: pointer; transition: opacity 0.15s; display: flex; align-items: center; justify-content: center; gap: var(--sp-2); }
+.btn:active { opacity: 0.7; }
+.btn-primary { background: var(--color-primary); color: var(--color-white); border-color: var(--color-primary); }
+.btn-secondary { background: transparent; color: var(--color-white); border-color: var(--color-pale-silver); }
+.btn-ghost { background: transparent; color: var(--color-silver-fog); border-color: var(--color-graphite); }
+.btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+
+/* ── Session banner ── */
+.session-banner { margin: 0 0 var(--sp-4); padding: var(--sp-3) var(--sp-4); background: transparent; border: 1px solid var(--color-graphite); border-radius: var(--r-md); font-size: var(--fs-secondary); color: var(--color-silver-fog); display: flex; align-items: center; gap: var(--sp-3); font-weight: var(--fw-regular); }
+.pulse-dot { width: var(--sp-2); height: var(--sp-2); border-radius: var(--r-round); animation: pulse 1.5s infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── Modal ── */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
+.modal-backdrop.open { display: flex; }
+.modal { background: var(--surface-dark); border-top: 1px solid var(--color-graphite); border-radius: var(--r-md) var(--r-md) var(--r-xs) var(--r-xs); padding: var(--sp-6) var(--sp-4) max(var(--sp-6), env(safe-area-inset-bottom)); width: 100%; max-width: 480px; animation: modalUp 0.25s ease; }
+@keyframes modalUp { from { transform: translateY(var(--sp-16)); } to { transform: translateY(0); } }
+.modal-icon { display: flex; justify-content: center; margin-bottom: var(--sp-3); color: var(--color-white); }
+.modal h3 { font-size: var(--fs-title); font-weight: var(--fw-medium); margin-bottom: var(--sp-2); text-align: center; }
+.modal p { font-size: var(--fs-secondary); color: var(--color-silver-fog); margin-bottom: var(--sp-6); line-height: 1.5; text-align: center; }
+.modal-actions { display: flex; flex-direction: column; gap: var(--sp-3); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="brand"><span class="b1">JB</span><span class="b2"> Workout</span></div>
+    <button class="icon-btn" onclick="openReset()" aria-label="Reset">
+      <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 4v5h-5M20 12a8 8 0 0 1-13.7 5.6M4 20v-5h5"/></svg>
+    </button>
+  </div>
+  <div class="day-tabs" id="day-tabs"></div>
+  <div class="today-label" id="today-label"></div>
+  <div class="hero" id="hero"></div>
+  <div class="workout-sections" id="workout-sections"></div>
+  <div class="actions" id="actions"></div>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-icon" id="modal-icon"></div>
+    <h3 id="modal-title"></h3>
+    <p id="modal-body"></p>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script>
+// Thin line icons — monochrome, currentColor, on-palette
+const L = (w, d) => `<svg class="icon" width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICONS = {
+  barbell:      L(24, `<path d="M4 8.5v7M7 6.5v11M17 6.5v11M20 8.5v7M7 12h10"/>`),
+  dumbbell:     L(24, `<path d="M6 7.5v9M9 9v6M15 9v6M18 7.5v9M9 12h6"/>`),
+  cable:        L(24, `<circle cx="12" cy="5" r="2"/><path d="M12 7v3.5M9 10.5h6M12 10.5v4.5M10 15h4"/>`),
+  machine:      L(24, `<path d="M5 4v16M19 4v16M5 5h14M9 20h6"/><rect x="8" y="8" width="8" height="6" rx="1"/>`),
+  body:         L(24, `<circle cx="12" cy="5" r="2"/><path d="M12 7.5v5.5M8.5 10h7M9 20l3-7 3 7"/>`),
+  play:         `<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>`,
+  playLg:       `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10-6.5z"/></svg>`,
+  check:        `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`,
+  checkSm:      `<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`,
+  trendUp:      `<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16l5.5-5.5 4 4L21 6M15 6h6v6"/></svg>`,
+  clock:        L(16, `<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/>`),
+  dumbbellSm:   L(16, `<path d="M6 7.5v9M9 9v6M15 9v6M18 7.5v9M9 12h6"/>`),
+  layers:       L(16, `<path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5M3 17l9 5 9-5"/>`),
+  flag:         L(16, `<path d="M5 21V4M5 4.5h11l-2.2 3.5L16 11.5H5"/>`),
+  closeX:       `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  back:         `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg>`,
+  trash:        L(16, `<path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/>`),
+  today:        `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8 3v3.5M16 3v3.5"/><circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"/></svg>`,
+  calendar:     L(16, `<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8 3v3.5M16 3v3.5"/>`),
+  trophy:       L(24, `<path d="M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4.5v1.5A3.5 3.5 0 0 0 7 10.9M17 6h2.5v1.5A3.5 3.5 0 0 1 17 10.9M9.5 20h5M12 14v6"/>`),
+  warn:         `<svg class="icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5H2.5zM12 9.5v4.5"/><circle cx="12" cy="17.3" r="1" fill="currentColor" stroke="none"/></svg>`,
+  reset:        `<svg class="icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 4v5h-5M20 12a8 8 0 0 1-13.7 5.6M4 20v-5h5"/></svg>`,
+};
+
+const WORKOUTS = [
+  { day:1, label:"Day 1", est:50, groups:[
+    { label:"Bench", exercises:[
+      {id:"BBP",  name:"Barbell Bench Press",               sets:3, reps:8,  weight:135, unit:"lbs", icon:"barbell"},
+      {id:"DRD",  name:"Dumbbell Romanian Deadlift",        sets:3, reps:10, weight:50,  unit:"lbs", icon:"dumbbell"},
+      {id:"SDIC", name:"Seated Dumbbell Incline Curl",      sets:3, reps:10, weight:20,  unit:"lbs", icon:"dumbbell"},
+    ]},
+    { label:"Cable Station", exercises:[
+      {id:"COTR", name:"Cable Overhead Triceps Ext (Rope)", sets:3, reps:12, weight:40,  unit:"lbs", icon:"cable"},
+    ]},
+    { label:"Open Floor", exercises:[
+      {id:"WL",   name:"Walking Lunge",                     sets:3, reps:16, weight:0,   unit:"BW",  icon:"body"},
+    ]},
+  ]},
+  { day:2, label:"Day 2", est:62, groups:[
+    { label:"Bench", exercises:[
+      {id:"DIB",  name:"Dumbbell Incline Bench Press",      sets:4, reps:6,  weight:50,  unit:"lbs", icon:"dumbbell"},
+    ]},
+    { label:"Squat Rack", exercises:[
+      {id:"PR",   name:"Pendlay Row",                       sets:3, reps:15, weight:95,  unit:"lbs", icon:"barbell"},
+    ]},
+    { label:"Machine Area", exercises:[
+      {id:"PDCF", name:"Pec Deck Chest Fly",                sets:3, reps:10, weight:70,  unit:"lbs", icon:"machine"},
+      {id:"MLP",  name:"Machine Lat Pullover",              sets:3, reps:10, weight:60,  unit:"lbs", icon:"machine"},
+      {id:"MSC",  name:"Machine Seated Crunch",             sets:3, reps:20, weight:50,  unit:"lbs", icon:"machine"},
+    ]},
+  ]},
+  { day:3, label:"Day 3", est:58, groups:[
+    { label:"Squat Rack", exercises:[
+      {id:"BSS",  name:"Barbell Sumo Squat",                sets:4, reps:8,  weight:135, unit:"lbs", icon:"barbell"},
+    ]},
+    { label:"Machine Area", exercises:[
+      {id:"MLR",  name:"Machine Lateral Raise",             sets:4, reps:15, weight:40,  unit:"lbs", icon:"machine"},
+      {id:"MSLE", name:"Machine Seated Leg Extension",      sets:4, reps:12, weight:70,  unit:"lbs", icon:"machine"},
+    ]},
+    { label:"Bench", exercises:[
+      {id:"DHC",  name:"Dumbbell Hammer Curl",              sets:4, reps:8,  weight:30,  unit:"lbs", icon:"dumbbell"},
+    ]},
+    { label:"Cable Station", exercises:[
+      {id:"COTR3",name:"Cable Overhead Triceps Ext (Rope)", sets:4, reps:10, weight:35,  unit:"lbs", icon:"cable"},
+    ]},
+  ]},
+  { day:4, label:"Day 4", est:52, groups:[
+    { label:"Cable Station", exercises:[
+      {id:"CCGLP",name:"Cable Close-Grip Lat Pulldown",     sets:4, reps:8,  weight:80,  unit:"lbs", icon:"cable"},
+      {id:"CKC",  name:"Cable Kneeling Crunch",             sets:4, reps:10, weight:40,  unit:"lbs", icon:"cable"},
+    ]},
+    { label:"Bench", exercises:[
+      {id:"BBP4", name:"Barbell Bench Press",               sets:4, reps:9,  weight:135, unit:"lbs", icon:"barbell"},
+      {id:"DIRLR",name:"Dumbbell Incline Rear Lateral Raise",sets:3,reps:8,  weight:15,  unit:"lbs", icon:"dumbbell"},
+    ]},
+    { label:"Machine Area", exercises:[
+      {id:"MSCR", name:"Machine Standing Calf Raise",       sets:3, reps:10, weight:165, unit:"lbs", icon:"machine"},
+    ]},
+  ]},
+];
+
+const KEY  = 'jb_workout_v5';
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)||'{}'); } catch(e) { return {}; } };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} };
+
+let state = load();
+if (!state.currentDay) state.currentDay = 1;
+if (!state.weights)    state.weights    = {};
+if (!state.reps)       state.reps       = {};
+if (!state.session)    state.session    = null;
+
+let activeDay = state.currentDay;
+
+const RING_C    = 2 * Math.PI * 54;
+const getW      = (id, def) => state.weights[id] !== undefined ? state.weights[id] : def;
+const getR      = (id, def) => state.reps[id]    !== undefined ? state.reps[id]    : def;
+const getInc    = (id, def) => getW(id, def) - def;
+const vidUrl    = name => `https://www.youtube.com/results?search_query=${encodeURIComponent(name+' exercise proper form')}`;
+const flatten   = w => w.groups.flatMap(g => g.exercises);
+const initSess  = idx => flatten(WORKOUTS[idx]).map(ex => ({
+  exId: ex.id,
+  sets: Array.from({length: ex.sets}, () => ({reps: getR(ex.id, ex.reps), weight: getW(ex.id, ex.weight), done: false}))
+}));
+const getSess    = () => (state.session && state.session.dayIndex === activeDay-1) ? state.session.data : null;
+const sessActive = () => state.session !== null;
+const buildIdx   = idx => { const m={}; flatten(WORKOUTS[idx]).forEach((ex,i)=>m[ex.id]=i); return m; };
+
+function sessStats(sess, flat) {
+  const total = flat.reduce((n, ex) => n + ex.sets, 0);
+  const done  = sess ? sess.reduce((n, e) => n + e.sets.filter(s => s.done).length, 0) : 0;
+  return { total, done, pct: total ? Math.round(done / total * 100) : 0 };
+}
+
+function render() { renderTabs(); renderHero(); renderSections(); renderButtons(); }
+
+function renderTabs() {
+  document.getElementById('day-tabs').innerHTML = WORKOUTS.map(w =>
+    `<button class="day-tab ${w.day===activeDay?'active':''}" onclick="switchDay(${w.day})">${w.label}</button>`
+  ).join('');
+  const lbl = document.getElementById('today-label');
+  lbl.innerHTML = activeDay === state.currentDay
+    ? `${ICONS.today} Today's workout`
+    : `${ICONS.calendar} Previewing ${WORKOUTS[activeDay-1].label}`;
+}
+
+function renderHero() {
+  const w    = WORKOUTS[activeDay-1];
+  const sess = getSess();
+  const flat = flatten(w);
+  const { total, done, pct } = sessStats(sess, flat);
+  const active   = !!sess;
+  const complete = active && total > 0 && done === total;
+  const off      = RING_C * (1 - pct/100);
+  const ringCol  = active ? 'var(--color-primary)' : 'var(--color-pewter)';
+  const status   = complete ? 'COMPLETE' : active ? 'IN PROGRESS' : (activeDay === state.currentDay ? 'READY' : 'PREVIEW');
+  const bigNum   = active ? pct + '%' : String(activeDay);
+
+  document.getElementById('hero').innerHTML = `
+    <div class="hero-ring-wrap">
+      <svg class="hero-ring" viewBox="0 0 120 120">
+        <circle class="ring-track" cx="60" cy="60" r="54"/>
+        <circle id="ring-fill" class="ring-fill" cx="60" cy="60" r="54"
+                style="stroke-dasharray:${RING_C};stroke-dashoffset:${off};stroke:${ringCol}"/>
+      </svg>
+      <div class="hero-center">
+        <div class="hero-num" id="hero-num">${bigNum}</div>
+        <div class="hero-day">${w.label.toUpperCase()}</div>
+      </div>
+    </div>
+    <div class="hero-info">
+      <div class="hero-status ${complete?'is-complete':active?'is-active':''}" id="hero-status">${status}</div>
+      <div class="hero-stats">
+        <span class="hero-stat">${ICONS.dumbbellSm} ${flat.length} exercises</span>
+        <span class="hero-stat">${ICONS.clock} ${w.est} min</span>
+        <span class="hero-stat" id="hero-sets">${ICONS.layers} ${done}/${total} sets</span>
+      </div>
+    </div>`;
+}
+
+function updateHero() {
+  const w    = WORKOUTS[activeDay-1];
+  const sess = getSess();
+  const flat = flatten(w);
+  const { total, done, pct } = sessStats(sess, flat);
+  const active   = !!sess;
+  const complete = active && total > 0 && done === total;
+
+  const fill = document.getElementById('ring-fill');
+  if (fill) {
+    fill.style.strokeDashoffset = RING_C * (1 - pct/100);
+    fill.style.stroke = active ? 'var(--color-primary)' : 'var(--color-pewter)';
+  }
+  const num = document.getElementById('hero-num');
+  if (num) num.textContent = active ? pct + '%' : String(activeDay);
+  const st = document.getElementById('hero-status');
+  if (st) {
+    st.textContent = complete ? 'COMPLETE' : active ? 'IN PROGRESS' : (activeDay === state.currentDay ? 'READY' : 'PREVIEW');
+    st.className = 'hero-status ' + (complete ? 'is-complete' : active ? 'is-active' : '');
+  }
+  const sets = document.getElementById('hero-sets');
+  if (sets) sets.innerHTML = `${ICONS.layers} ${done}/${total} sets`;
+}
+
+function renderSections() {
+  const w      = WORKOUTS[activeDay-1];
+  const sess   = getSess();
+  const exIdx  = buildIdx(activeDay-1);
+  const allFlat = flatten(w);
+  const workoutAllDone = sess && allFlat.every((ex,ei) => sess[ei].sets.every(s=>s.done));
+
+  let bannerHtml = '';
+  if (workoutAllDone) {
+    bannerHtml = `
+      <div class="workout-complete-banner">
+        <div class="wc-icon">${ICONS.trophy}</div>
+        <div class="wc-text">
+          <div class="wc-title">Workout Complete</div>
+          <div class="wc-sub">All sets done · tap finish to save</div>
+        </div>
+      </div>`;
+  } else if (sessActive() && state.session.dayIndex === activeDay-1) {
+    bannerHtml = `<div class="session-banner"><div class="pulse-dot" style="background:var(--color-primary);"></div>Workout in progress</div>`;
+  } else if (sessActive()) {
+    bannerHtml = `<div class="session-banner"><div class="pulse-dot" style="background:var(--color-silver-fog);"></div>Active: ${WORKOUTS[state.session.dayIndex].label}</div>`;
+  }
+
+  const sectionsHtml = w.groups.map(group => {
+    const groupDone = sess && group.exercises.every(ex => {
+      const ei = exIdx[ex.id];
+      return sess[ei].sets.every(s => s.done);
+    });
+
+    const headerHtml = `
+      <div class="equipment-header ${groupDone?'group-done':''}">
+        <div class="equip-label">
+          <div class="equip-name">${group.label}</div>
+          <div class="equip-count">${group.exercises.length} exercise${group.exercises.length>1?'s':''}</div>
+        </div>
+        ${groupDone ? `<div class="equip-done-badge">DONE</div>` : ''}
+      </div>`;
+
+    const exercisesHtml = group.exercises.map((ex, delay) => {
+      const ei         = exIdx[ex.id];
+      const curW       = getW(ex.id, ex.weight);
+      const curR       = getR(ex.id, ex.reps);
+      const inc        = getInc(ex.id, ex.weight);
+      const isBW       = ex.unit === 'BW';
+      const badgeInner = isBW ? 'BW' : (inc > 0
+        ? `<span class="badge-trend">${ICONS.trendUp}</span>+${inc}LBS`
+        : `${curW}LBS`);
+      const badgeCls   = isBW ? 'zero' : (inc > 0 ? 'up' : '');
+
+      let setsHtml = '';
+      if (sess) {
+        const exS       = sess[ei];
+        const doneCount = exS.sets.filter(s => s.done).length;
+        const pct       = (doneCount / exS.sets.length) * 100;
+        const exDone    = doneCount === exS.sets.length;
+        setsHtml = `
+          <div class="sets-head">
+            <span class="field-label">Reps</span>
+            <span class="field-label">${isBW?'':'Weight'}</span>
+          </div>
+          <div class="sets-list">
+            ${exS.sets.map((s, si) => `
+              <div class="set-row">
+                <span class="set-num">SET ${si+1}</span>
+                <div class="set-check ${s.done?'done':''}" data-ei="${ei}" onclick="toggleSet(${ei},${si})">
+                  ${s.done ? ICONS.check : ''}
+                </div>
+                <div class="set-fields">
+                  <div class="field-wrap">
+                    <input class="field-val" data-field="reps" type="number" inputmode="numeric" value="${s.reps}" onfocus="this.select()" onchange="updateSet(${ei},${si},'reps',this.value)">
+                  </div>
+                  <div class="field-wrap">
+                    <input class="field-val" data-field="weight" type="number" inputmode="decimal" value="${isBW?'':s.weight}" ${isBW?'placeholder="BW" disabled':''} onfocus="this.select()" onchange="updateSet(${ei},${si},'weight',this.value)">
+                  </div>
+                </div>
+              </div>`).join('')}
+          </div>
+          <div class="ex-progress"><div class="ex-progress-fill" data-ei="${ei}" style="width:${pct}%"></div></div>
+          ${exDone ? `<div class="ex-completed-banner">${ICONS.checkSm} Complete · +5lbs next session</div>` : ''}
+        `;
+      } else {
+        setsHtml = `<div style="font-size:var(--fs-secondary);color:var(--color-pewter);margin-top:var(--sp-2);margin-left:var(--sp-16);font-weight:var(--fw-regular);">${ex.sets} × ${curR}${!isBW?` @ ${curW}LBS`:''}</div>`;
+      }
+
+      const exDoneClass = sess && sess[ei].sets.every(s=>s.done) ? 'ex-done' : '';
+      return `
+        <div class="ex-card ${exDoneClass}" data-ei="${ei}">
+          <div class="ex-header">
+            <a class="ex-icon-btn" href="${vidUrl(ex.name)}" target="_blank" rel="noopener">${ICONS[ex.icon]}</a>
+            <div class="ex-main">
+              <div class="ex-name-row">
+                <span class="ex-name">${ex.name}</span>
+                <a class="video-btn" href="${vidUrl(ex.name)}" target="_blank" rel="noopener">${ICONS.play}</a>
+              </div>
+            </div>
+            <div class="ex-badge ${badgeCls}">${badgeInner}</div>
+          </div>
+          ${setsHtml}
+        </div>`;
+    }).join('');
+
+    return `${headerHtml}<div class="ex-group ${groupDone?'group-done':''}">${exercisesHtml}</div>`;
+  }).join('');
+
+  document.getElementById('workout-sections').innerHTML = bannerHtml + sectionsHtml;
+}
+
+function renderButtons() {
+  const sess = getSess();
+  const c    = document.getElementById('actions');
+  if (!sess && !sessActive()) {
+    c.innerHTML = `<button class="btn btn-primary" onclick="startWorkout()">${ICONS.playLg} Start Workout</button>`;
+  } else if (!sess && sessActive()) {
+    c.innerHTML = `<button class="btn btn-secondary" onclick="switchDay(${state.session.dayIndex+1})">${ICONS.back} Resume ${WORKOUTS[state.session.dayIndex].label}</button>`;
+  } else {
+    const allDone = state.session.data.every(ex => ex.sets.every(s => s.done));
+    c.innerHTML = `
+      <button class="btn ${allDone?'btn-primary':'btn-secondary'}" onclick="confirmFinish()">
+        ${allDone ? ICONS.checkSm : ICONS.flag}
+        ${allDone ? 'Finish & Next Day' : 'Finish Workout'}
+      </button>
+      <button class="btn btn-danger" onclick="confirmEndEarly()">${ICONS.closeX} End Early</button>
+    `;
+  }
+}
+
+function switchDay(day) { activeDay = day; render(); }
+
+function startWorkout() {
+  if (sessActive()) return;
+  state.session = {dayIndex: activeDay-1, data: initSess(activeDay-1), startedAt: Date.now()};
+  save(); render();
+}
+
+function toggleSet(ei, si) {
+  const s = getSess(); if (!s) return;
+  s[ei].sets[si].done = !s[ei].sets[si].done;
+  save();
+  updateAfterSetToggle(ei);
+}
+
+// Edits apply to EVERY set in the exercise and persist as the exercise's base value
+function updateSet(ei, si, field, val) {
+  const s = getSess(); if (!s) return;
+  const num = parseFloat(val) || 0;
+  s[ei].sets.forEach(set => { set[field] = num; });
+
+  const ex = flatten(WORKOUTS[activeDay-1])[ei];
+  if (field === 'weight' && ex.unit !== 'BW') state.weights[ex.id] = num;
+  if (field === 'reps') state.reps[ex.id] = num;
+  save();
+
+  // Reflect the change on the sibling set inputs without disturbing the focused field
+  const card = document.querySelector(`.ex-card[data-ei="${ei}"]`);
+  if (!card) return;
+  card.querySelectorAll(`.field-val[data-field="${field}"]`).forEach(inp => {
+    if (document.activeElement !== inp) inp.value = num;
+  });
+  if (field === 'weight' && ex.unit !== 'BW') {
+    const badge = card.querySelector('.ex-badge');
+    if (badge) {
+      const inc = num - ex.weight;
+      badge.className = 'ex-badge ' + (inc > 0 ? 'up' : '');
+      badge.innerHTML = inc > 0
+        ? `<span class="badge-trend">${ICONS.trendUp}</span>+${inc}LBS`
+        : `${num}LBS`;
+    }
+  }
+}
+
+// Targeted DOM update: avoids full re-render so entrance animations don't replay
+function updateAfterSetToggle(ei) {
+  const sess  = getSess(); if (!sess) return;
+  const w     = WORKOUTS[activeDay-1];
+  const flat  = flatten(w);
+  const exIdx = buildIdx(activeDay-1);
+
+  // 1. Update the specific check buttons
+  const checks = document.querySelectorAll(`.set-check[data-ei="${ei}"]`);
+  checks.forEach((el, si) => {
+    const isDone = sess[ei].sets[si].done;
+    if (isDone && !el.classList.contains('done')) {
+      el.classList.add('done');
+      el.innerHTML = ICONS.check;
+    } else if (!isDone && el.classList.contains('done')) {
+      el.classList.remove('done');
+      el.innerHTML = '';
+    }
+  });
+
+  // 2. Update the progress bar for this exercise
+  const exS       = sess[ei];
+  const doneCount = exS.sets.filter(s => s.done).length;
+  const pct       = (doneCount / exS.sets.length) * 100;
+  const exDone    = doneCount === exS.sets.length;
+  const fill = document.querySelector(`.ex-progress-fill[data-ei="${ei}"]`);
+  if (fill) fill.style.width = `${pct}%`;
+
+  // 3. Update the exercise card "done" state and complete banner
+  const card = document.querySelector(`.ex-card[data-ei="${ei}"]`);
+  if (card) {
+    card.classList.toggle('ex-done', exDone);
+    let banner = card.querySelector('.ex-completed-banner');
+    if (exDone && !banner) {
+      banner = document.createElement('div');
+      banner.className = 'ex-completed-banner';
+      banner.innerHTML = `${ICONS.checkSm} Complete · +5lbs next session`;
+      card.appendChild(banner);
+    } else if (!exDone && banner) {
+      banner.remove();
+    }
+  }
+
+  // 4. Update group "done" state (find which group this exercise belongs to)
+  let groupIdx = -1;
+  let runningI = 0;
+  w.groups.forEach((g, gi) => {
+    if (ei >= runningI && ei < runningI + g.exercises.length) groupIdx = gi;
+    runningI += g.exercises.length;
+  });
+  if (groupIdx !== -1) {
+    const group = w.groups[groupIdx];
+    const groupDone = group.exercises.every(e => sess[exIdx[e.id]].sets.every(s => s.done));
+    const header = document.querySelectorAll('.equipment-header')[groupIdx];
+    const grp    = document.querySelectorAll('.ex-group')[groupIdx];
+    if (header) {
+      header.classList.toggle('group-done', groupDone);
+      const existingBadge = header.querySelector('.equip-done-badge');
+      if (groupDone && !existingBadge) {
+        const badge = document.createElement('div');
+        badge.className = 'equip-done-badge';
+        badge.textContent = 'DONE';
+        header.appendChild(badge);
+      } else if (!groupDone && existingBadge) {
+        existingBadge.remove();
+      }
+    }
+    if (grp) grp.classList.toggle('group-done', groupDone);
+  }
+
+  // 5. Update full-workout-complete banner & action buttons
+  const allDone = flat.every((e, i) => sess[i].sets.every(s => s.done));
+  const sectionsEl = document.getElementById('workout-sections');
+  let wcBanner = sectionsEl.querySelector('.workout-complete-banner');
+  let sBanner  = sectionsEl.querySelector('.session-banner');
+  if (allDone) {
+    if (sBanner) sBanner.remove();
+    if (!wcBanner) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = `
+        <div class="workout-complete-banner">
+          <div class="wc-icon">${ICONS.trophy}</div>
+          <div class="wc-text">
+            <div class="wc-title">Workout Complete</div>
+            <div class="wc-sub">All sets done · tap finish to save</div>
+          </div>
+        </div>`;
+      sectionsEl.insertBefore(tmp.firstElementChild, sectionsEl.firstChild);
+    }
+  } else {
+    if (wcBanner) wcBanner.remove();
+    if (!sBanner && sessActive() && state.session.dayIndex === activeDay-1) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = `<div class="session-banner"><div class="pulse-dot" style="background:var(--color-primary);"></div>Workout in progress</div>`;
+      sectionsEl.insertBefore(tmp.firstElementChild, sectionsEl.firstChild);
+    }
+  }
+
+  updateHero();
+  renderButtons();
+}
+
+function confirmFinish() {
+  const sess = getSess(); if (!sess) return;
+  const w      = WORKOUTS[activeDay-1];
+  const flat   = flatten(w);
+  const bumped = flat.filter((ex,ei) => sess[ei].sets.every(s=>s.done) && ex.unit!=='BW').map(ex=>ex.name);
+  const msg    = bumped.length > 0
+    ? `+5lbs applied next session: ${bumped.join(', ')}.`
+    : 'No exercises fully completed — no weight increases this time.';
+  openModal({
+    icon: ICONS.trophy,
+    title: 'Finish Workout?',
+    body: `${msg} You'll advance to ${WORKOUTS[activeDay%4].label} next.`,
+    actions: [
+      {label:'Finish & Save', cls:'btn-primary', icon: ICONS.checkSm, fn: finishWorkout},
+      {label:'Cancel',        cls:'btn-ghost',   icon: ICONS.back,    fn: closeModal}
+    ]
+  });
+}
+
+function finishWorkout() {
+  const sess = getSess(); if (!sess) return closeModal();
+  const flat = flatten(WORKOUTS[activeDay-1]);
+  // Only fully-completed, weighted exercises get the +5lbs progression
+  flat.forEach((ex, ei) => {
+    if (sess[ei].sets.every(s=>s.done) && ex.unit!=='BW')
+      state.weights[ex.id] = getW(ex.id, ex.weight) + 5;
+  });
+  state.session    = null;
+  state.currentDay = (activeDay % 4) + 1;
+  activeDay        = state.currentDay;
+  save(); closeModal(); render();
+}
+
+function confirmEndEarly() {
+  openModal({
+    icon: ICONS.warn,
+    title: 'End Workout Early?',
+    body: 'This session will be discarded. No weights will increase and you will stay on the same day.',
+    actions: [
+      {label:'Yes, End Workout', cls:'btn-danger', icon: ICONS.closeX, fn: endEarly},
+      {label:'Keep Going',       cls:'btn-ghost',  icon: ICONS.back,   fn: closeModal}
+    ]
+  });
+}
+
+function endEarly() { state.session = null; save(); closeModal(); render(); }
+
+function openReset() {
+  openModal({
+    icon: ICONS.reset,
+    title: 'Reset All Progress?',
+    body: 'All weight and rep edits will be cleared and every exercise returns to its original starting values. This cannot be undone.',
+    actions: [
+      {label:'Reset Everything', cls:'btn-danger', icon: ICONS.trash, fn: resetAll},
+      {label:'Cancel',           cls:'btn-ghost',  icon: ICONS.back,  fn: closeModal}
+    ]
+  });
+}
+
+function resetAll() {
+  state = {currentDay:1, weights:{}, reps:{}, session:null};
+  activeDay = 1;
+  save(); closeModal(); render();
+}
+
+function openModal({icon, title, body, actions}) {
+  document.getElementById('modal-icon').innerHTML    = icon || '';
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').textContent  = body;
+  const c = document.getElementById('modal-actions');
+  c.innerHTML = '';
+  actions.forEach(a => {
+    const b = document.createElement('button');
+    b.className = `btn ${a.cls}`;
+    b.innerHTML = `${a.icon}${a.label}`;
+    b.onclick   = a.fn;
+    c.appendChild(b);
+  });
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id==='modal') closeModal(); });
+
+render();
+</script>
+</body>
+</html>
